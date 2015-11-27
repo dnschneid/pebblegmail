@@ -7,12 +7,12 @@ var GApi = {
     var googleOauth = Settings.option('google_oauth');
     if (googleOauth) {
       var now = new Date();
-      var expiry = (googleOauth['created'] + googleOauth['expires_in']) * 1000;
+      var expiry = (googleOauth.created + googleOauth.expires_in) * 1000;
       
       if (now.valueOf() < expiry) {
-        callback(googleOauth['access_token']);
+        callback(googleOauth.access_token);
       } else {
-        var refreshToken = googleOauth['refresh_token'];
+        var refreshToken = googleOauth.refresh_token;
         var url = 'https://legacy.keanulee.com/workmate/configure/google_oauth.php?refresh_token=' +
             encodeURIComponent(refreshToken);
         
@@ -20,12 +20,12 @@ var GApi = {
           url: url,
           type: 'json'
         }, function(data) {
-          if (data['google_oauth']) {
-            for (var key in data['google_oauth']) {
-              googleOauth[key] = data['google_oauth'][key];
+          if (data.google_oauth) {
+            for (var key in data.google_oauth) {
+              googleOauth[key] = data.google_oauth[key];
             }
             Settings.option('google_oauth', googleOauth);
-            callback(googleOauth['access_token']);
+            callback(googleOauth.access_token);
           } else {
             new ErrorCard('Could not refresh Google access token');
             if (errorCallback) errorCallback();

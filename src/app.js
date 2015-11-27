@@ -1,8 +1,8 @@
 var Settings = require('settings');
-var MainMenu = require('MainMenu');
+var MailLabelsList = require('Mail/MailLabelsList');
 
 Settings.config({
   url: 'https://keanulee.github.io/workmate/configure/'
 });
 
-new MainMenu();
+new MailLabelsList();
