@@ -82,8 +82,8 @@
       if (name && key) {
         this.data.accounts = this.data.accounts || [];
         this.data.accounts.push({ 'name': name, 'key': key });
+        this.returnData();
       }
-      this.returnData();
     },
 
     clear: function() {

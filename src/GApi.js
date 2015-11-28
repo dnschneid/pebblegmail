@@ -6,7 +6,6 @@ var GApi = {
   getAccessToken: function(callback, errorCallback, i /* account index */) {
     var accounts = Settings.option('accounts');
     i = i || 0;
-    /* var url = https://www.googleapis.com/oauth2/v3/token */
     if (!accounts || !accounts[i] || (!accounts[i].oauth && !accounts[i].key)) {
       new ErrorCard('Not signed in', 'Sign in using the app configuration page.');
       if (errorCallback) errorCallback();
@@ -52,7 +51,7 @@ var GApi = {
       }, function(error) {
         new ErrorCard('Could not request Google access token');
         if (errorCallback) errorCallback();
-      }); 
+      });
     }
   }
 };
