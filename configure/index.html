@@ -2,24 +2,30 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <title>Workmate Settings</title>
+  <title>Gmail Settings</title>
 
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <h1 id="reload">Workmate</h1>
+  <h1 id="reload">Gmail</h1>
+  <ul id="accounts"><li>No accounts added.</li></ul>
 
-  <div class="pebble-preview">
-    <div class="image-container">
-      <!-- No spaces between img. -->
-      <img src="images/inbox.png"><img src="images/calendar.png"><img src="images/tasks.png">
-    </div>
-  </div>
+  <span id="secrets">
+    You must first provide an oauth2 client ID and secret.<br />
+    Client ID: <input type="text" id="clientId"><br />
+    Secret: <input type="text" id="secret">
+    <a class="btn btn-blue" id="saveSecrets">Store ID and Secret</a>
+  </span>
 
-  <p>Workmate lets you preview and manage Gmail messages, see your Google Calendar events, and manage your Google Tasks.</p>
+  <span id="newAccount">
+  <a class="btn btn-blue" id="signIn">Get Key</a>
+  New Account Name: <input type="text" id="name"><br />
+  Paste key here: <input type="text" id="key"><br />
+  <a class="btn btn-blue" id="add">Add Google account</a>
+  </span>
 
-  <a class="btn btn-blue" id="signIn">Sign in with Google</a>
-  <a class="btn btn-red" id="signOut">Sign out of Google</a>
+  <a class="btn btn-red" id="clear">Clear data</a>
+
   <script>
   var ConfigurePage = {
     data: {},
@@ -37,23 +43,55 @@
         this.returnTo = decodeURIComponent(returnTo[1]);
       }
 
-      if (this.data.google_oauth) {
-        document.getElementById('signIn').classList.add('hidden');
+      if (this.data.clientId && this.data.secret) {
+        document.getElementById('secrets').style.display = "none";
       } else {
-        document.getElementById('signOut').classList.add('hidden');
+        document.getElementById('newAccount').style.display = "none";
       }
+
+      if (this.data.accounts) {
+        var accounts = document.getElementById('accounts');
+        accounts.removeChild(accounts.childNodes[0]);
+        this.data.accounts.forEach(function(account) {
+          var item = document.createElement("li");
+          var value = document.createTextNode(account.name);
+          item.appendChild(value);
+          accounts.appendChild(item)
+        });
+      }
+    },
+
+    saveSecrets: function() {
+      this.data.clientId = document.getElementById('clientId').value;
+      this.data.secret = document.getElementById('secret').value;
+      this.returnData();
     },
 
     signIn: function() {
       window.location.href =
-        'https://legacy.keanulee.com/workmate/configure/google_oauth.php?state=' +
-        encodeURIComponent(this.returnTo.replace(':','::'));
+        "https://accounts.google.com/o/oauth2/auth"
+          + "?response_type=code"
+          + "&client_id=" + encodeURIComponent(this.data.clientId)
+          + "&scope=" +  "https://www.googleapis.com/auth/gmail.modify"
+          + "&redirect_uri=" + "urn:ietf:wg:oauth:2.0:oob";
     },
 
-    signOut: function() {
-      this.data = {
-        'google_oauth': null
-      };
+    add: function() {
+      var name = document.getElementById('name').value;
+      var key = document.getElementById('key').value;
+      if (name && key) {
+        this.data.accounts = this.data.accounts || [];
+        this.data.accounts.push({ 'name': name, 'key': key });
+      }
+      this.returnData();
+    },
+
+    clear: function() {
+      this.data = { 'accounts': null, 'clientId': null, 'secret': null };
+      this.returnData();
+    },
+
+    returnData: function() {
       window.location.href = this.returnTo +
         encodeURIComponent(JSON.stringify(this.data));
     },
@@ -63,13 +101,17 @@
     }
   };
 
+  document.getElementById('saveSecrets').addEventListener('click', function() {
+    ConfigurePage.saveSecrets();
+  });
   document.getElementById('signIn').addEventListener('click', function() {
-    this.innerText = 'Signing in...';
     ConfigurePage.signIn();
   });
-  document.getElementById('signOut').addEventListener('click', function() {
-    this.innerText = 'Signing out...';
-    ConfigurePage.signOut();
+  document.getElementById('add').addEventListener('click', function() {
+    ConfigurePage.add();
+  });
+  document.getElementById('clear').addEventListener('click', function() {
+    ConfigurePage.clear();
   });
   document.getElementById('reload').addEventListener('click', function() {
     ConfigurePage.reload();
