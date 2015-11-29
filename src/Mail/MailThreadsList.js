@@ -16,8 +16,6 @@ var MailThreadsList = function(label) {
   }.bind(this), function() {
     this.menu.hide();
   }.bind(this));
-
-  Util.sendGAEvent('mail', 'mail-threads-list');
 };
 
 MailThreadsList.prototype.createMenu = function() {

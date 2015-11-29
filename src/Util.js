@@ -103,22 +103,6 @@ var Util = {
     var nextDate = new Date(date.toDateString());
     nextDate.setDate(nextDate.getDate() + 1);
     return nextDate;
-  },
-  
-  sendGAEvent: function(action, label) {
-    ajax({
-      url: 'https://www.google-analytics.com/collect',
-      method: 'post',
-      data: {
-        v: 1,
-        tid: 'UA-39573523-5',
-        cid: Pebble.getAccountToken(),
-        t: 'event',
-        ec: 'workmate-app-' + appinfo.versionLabel,
-        ea: action,
-        el: label
-      }
-    });
   }
 };
 

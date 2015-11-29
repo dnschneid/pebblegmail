@@ -15,8 +15,6 @@ var MailActionsList = function(message, threadsList, messagesList, messageCard) 
   }.bind(this), function() {
     this.menu.hide();
   }.bind(this));
-
-  Util.sendGAEvent('mail', 'mail-actions-list');
 };
 
 MailActionsList.prototype.createMenu = function() {
@@ -73,8 +71,6 @@ MailActionsList.prototype.createMenu = function() {
       }.bind(this), function() {
         this.menu.hide();
       }.bind(this));
-
-      Util.sendGAEvent('mail', 'mail-threads-modify');
     }
   }.bind(this));
 

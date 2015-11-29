@@ -12,8 +12,6 @@ var MailLabelsList = function() {
   }.bind(this), function() {
     this.menu.hide();
   }.bind(this));
-
-  Util.sendGAEvent('mail', 'mail-labels-list');
 };
 
 MailLabelsList.prototype.createMenu = function() {
