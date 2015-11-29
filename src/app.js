@@ -1,8 +1,8 @@
 var Settings = require('settings');
-var MailLabelsList = require('Mail/MailLabelsList');
+var AccountsList = require('AccountsList');
 
 Settings.config({
   url: 'https://dnschneid.github.io/pebblegmail/configure/'
 });
 
-new MailLabelsList();
+new AccountsList();

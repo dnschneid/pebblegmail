@@ -2,7 +2,7 @@ var UI = require('ui');
 var Util = require('Util');
 var MailActionsList = require('MailActionsList');
 
-var MailMessageCard = function(message, threadsList, messagesList) {
+var MailMessageCard = function(i, message, messagesList) {
   this.card = new UI.Card({
     title: Util.getMessageFromHeader(message),
     subtitle: Util.getMessageSubjectHeader(message),
@@ -11,11 +11,11 @@ var MailMessageCard = function(message, threadsList, messagesList) {
   });
   
   this.card.on('click', 'select', function() {
-    new MailActionsList(message, threadsList, messagesList, this);
+    new MailActionsList(i, message, messagesList, this);
   }.bind(this));
   
   this.card.on('longClick', 'select', function() {
-    new MailActionsList(message, threadsList, messagesList, this);
+    new MailActionsList(i, message, messagesList, this);
   }.bind(this));
   
   this.card.show();

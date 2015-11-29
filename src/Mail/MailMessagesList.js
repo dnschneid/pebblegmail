@@ -1,41 +1,60 @@
 var UI = require('ui');
 var Util = require('Util');
+var ErrorCard = require('ErrorCard');
+var Gmail = require('Mail/Gmail');
 var MailMessageCard = require('MailMessageCard');
 var MailActionsList = require('MailActionsList');
 
-var MailMessagesList = function(thread, threadsList) {
-  if (thread.messages.length === 1) {
-    new MailMessageCard(thread.messages[0], threadsList);
+var MailMessagesList = function(i, title, messages) {
+  if (messages.length === 0) {
+    new ErrorCard('No unread messages');
+  /*} else if (messages.length === 1) {
+    new MailMessageCard(i, messages[0]);*/
   } else {
-    var subject = Util.getMessageSubjectHeader(thread.messages[0]);
-  
+    this.messages = messages;
+    
     this.menu = new UI.Menu({
       sections: [{
-        title: Util.trimLine(subject),
-        items: thread.messages.map(function(message) {
-          var from = Util.getMessageFromHeader(message);
-
-          return {
-            title:  Util.trimLine(from),
-            subtitle:  Util.trimLine(Util.decodeHTML(message.snippet)),
-            message: message
-          };
-        })
+        title: title,
+        items: ''
       }]
     });
   
     this.menu.on('select', function(e) {
       var message = e.item.message;
-      if (message) new MailMessageCard(message, threadsList, this);
+      if (message) new MailMessageCard(i, message, this);
     }.bind(this));
       
     this.menu.on('longSelect', function(e) {
       var message = e.item.message;
-      if (message) new MailActionsList(message, threadsList, this);
+      if (message) new MailActionsList(i, message, this);
     }.bind(this));
   
     this.menu.show();
+    
+    messages.map(function(message) {
+      Gmail.Messages.get(i, message.id, function(data) {
+        for (var field in data) {
+          message[field] = data[field];
+        }
+        this.updateMessage(message);
+      }.bind(this), function() {
+        
+      });
+    }.bind(this));
   }
+  
+};
+
+MailMessagesList.prototype.updateMessage = function(message) {
+  /*var state = message.labelIds.indexOf('UNREAD') !== -1;*/
+  /* TODO: Update message state */
+  var index = this.messages.indexOf(message);
+  this.menu.item(0, index, {
+    title: Util.trimLine(Util.getMessageSubjectHeader(message)),
+    subtitle: Util.trimLine(Util.getMessageFromHeader(message)),
+    message: message
+  });
 };
 
 module.exports = MailMessagesList;

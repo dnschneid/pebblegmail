@@ -2,14 +2,14 @@ var UI = require('ui');
 var Util = require('Util');
 var Gmail = require('Gmail');
 
-var MailActionsList = function(message, threadsList, messagesList, messageCard) {
+var MailActionsList = function(i, message, messagesList, messageCard) {
+  this.accountIndex = i;
   this.message = message;
-  this.threadsList = threadsList;
   this.messagesList = messagesList;
   this.messageCard = messageCard;
   
   this.createMenu();
-  Gmail.Labels.list(function(data) {
+  Gmail.Labels.list(i, function(data) {
     this.labels = data.labels || [];
     this.updateMenu();
   }.bind(this), function() {
@@ -53,20 +53,9 @@ MailActionsList.prototype.createMenu = function() {
         icon: 'images/refresh.png'
       });
   
-      Gmail.Threads.modify(this.message.threadId, options, function(data) {
-        if (this.messagesList) this.messagesList.menu.hide();
+      Gmail.Messages.modify(this.accountIndex, this.message.id, options, function(data) {
         if (this.messageCard) this.messageCard.card.hide();
-  
-        // Update the labelIds for all the messages in the thread.
-        this.message.thread.messages.forEach(function(message) {
-          for (var i = 0; i < data.messages.length; i++) {
-            if (data.messages[i].id === message.id) {
-              message.labelIds = data.messages[i].labelIds;
-              break;
-            }
-          }
-        });
-        this.threadsList.updateThread(this.message.thread);
+        this.messagesList.updateMessage(this.message);
         this.menu.hide();
       }.bind(this), function() {
         this.menu.hide();

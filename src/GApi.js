@@ -3,9 +3,8 @@ var ajax = require('ajax');
 var ErrorCard = require('ErrorCard');
 
 var GApi = {
-  getAccessToken: function(callback, errorCallback, i /* account index */) {
+  getAccessToken: function(i /* account index */, callback, errorCallback) {
     var accounts = Settings.option('accounts');
-    i = i || 0;
     if (!accounts || !accounts[i] || (!accounts[i].oauth && !accounts[i].key)) {
       new ErrorCard('Not signed in', 'Sign in using the app configuration page.');
       if (errorCallback) errorCallback();

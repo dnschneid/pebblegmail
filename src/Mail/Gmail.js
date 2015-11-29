@@ -1,19 +1,18 @@
 var ajax = require('ajax');
 var GApi = require('GApi');
 var ErrorCard = require('ErrorCard');
-var Util = require('Util');
 
 var Gmail = {
   Labels: {
     listCache_: null,
 
-    list: function(callback, errorCallback) {
+    list: function(i, callback, errorCallback) {
       if (this.listCache_) {
         callback(this.listCache_);
         return;
       }
 
-      GApi.getAccessToken(function(accessToken) {
+      GApi.getAccessToken(i, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/labels?access_token=' +
           encodeURIComponent(accessToken);
         
@@ -31,77 +30,43 @@ var Gmail = {
     }
   },
   
-  Threads: {
-    list: function(labelId, callback, errorCallback) {
-      GApi.getAccessToken(function(accessToken) {
-        var url = 'https://www.googleapis.com/gmail/v1/users/me/threads?maxResults=20&access_token=' +
-          encodeURIComponent(accessToken);
-        if (labelId) url += '&labelIds=' + encodeURIComponent(labelId);
-        
-        // TODO: The normal threads.list request only returns IDs and not any user-visible strings,
-        // so here we make a threads.get request for each of the returned threads, which is up to
-        // 21 (1 + 20 maxResults) requests. In the future, use a backend that batches these requests
-        // and only return the fields we need to minimize network traffic.
+  Messages: {
+    list: function(i, callback, errorCallback) {
+      GApi.getAccessToken(i, function(accessToken) {
+        var url = 'https://www.googleapis.com/gmail/v1/users/me/messages' +
+                  '?maxResults=20' +
+                  '&q=' + encodeURIComponent('is:unread -is:mute') + /* TODO: make this a setting */
+                  '&access_token=' + encodeURIComponent(accessToken);
         ajax({
           url: url,
           type: 'json'
         }, function(data) {
-          if (data.threads) {
-            var numThreadsToCheck = data.threads.length;
-      
-            data.threads.forEach(function(thread) {
-              var url = 'https://www.googleapis.com/gmail/v1/users/me/threads/' +
-                thread.id + '?access_token=' +
-                encodeURIComponent(accessToken);
-              
-              ajax({
-                url: url,
-                type: 'json'
-              }, function(threadData) {
-                for (var i = 0; i < data.threads.length; i++) {
-                  if (data.threads[i].id === threadData.id) {
-                    data.threads[i] = threadData;
-                    
-                    // Create a reference from each message back to the thread object.
-                    data.threads[i].messages.forEach(function(message) {
-                      message.thread = data.threads[i];
-                    });
-
-                    break;
-                  }
-                }
-                
-                numThreadsToCheck--;
-                if (numThreadsToCheck <= 0) {
-                  data.threads = data.threads.filter(function(thread) {
-                    return !!thread.messages;
-                  });
-                  callback(data);
-                }
-              }, function(error) {
-                numThreadsToCheck--;
-                if (numThreadsToCheck <= 0) {
-                  data.threads = data.threads.filter(function(thread) {
-                    return !!thread.messages;
-                  });
-                  callback(data);
-                }
-              });
-            });
-          } else {
-            callback(data);
-          }
+          callback(data);
         }, function(error) {
-          new ErrorCard('Could not get threads');
+          new ErrorCard('Could not get messages');
+          if (errorCallback) errorCallback();
+        }); 
+      }, errorCallback);
+    },
+    
+    get: function(i, messageId, callback, errorCallback) {
+      GApi.getAccessToken(i, function(accessToken) {
+        var url = 'https://www.googleapis.com/gmail/v1/users/me/messages/' +
+                  messageId +
+                  '?access_token=' + encodeURIComponent(accessToken);
+        ajax({
+          url: url,
+          type: 'json'
+        }, callback, function(error) {
           if (errorCallback) errorCallback();
         }); 
       }, errorCallback);
     },
 
-    modify: function(threadId, options, callback, errorCallback) {
-      GApi.getAccessToken(function(accessToken) {
-        var url = 'https://www.googleapis.com/gmail/v1/users/me/threads/' +
-          threadId + '/modify?access_token=' +
+    modify: function(i, messageId, options, callback, errorCallback) {
+      GApi.getAccessToken(i, function(accessToken) {
+        var url = 'https://www.googleapis.com/gmail/v1/users/me/messages/' +
+          messageId + '/modify?access_token=' +
           encodeURIComponent(accessToken);
 
         ajax({
