@@ -31,11 +31,11 @@ var Gmail = {
   },
   
   Messages: {
-    list: function(i, callback, errorCallback) {
+    list: function(i, query, callback, errorCallback) {
       GApi.getAccessToken(i, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/messages' +
                   '?maxResults=20' +
-                  '&q=' + encodeURIComponent('is:unread -is:mute') + /* TODO: make this a setting */
+                  '&q=' + encodeURIComponent(query) +
                   '&access_token=' + encodeURIComponent(accessToken);
         ajax({
           url: url,
@@ -66,8 +66,8 @@ var Gmail = {
     modify: function(i, messageId, options, callback, errorCallback) {
       GApi.getAccessToken(i, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/messages/' +
-          messageId + '/modify?access_token=' +
-          encodeURIComponent(accessToken);
+          messageId + '/modify' +
+          '?access_token=' + encodeURIComponent(accessToken);
 
         ajax({
           url: url,

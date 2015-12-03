@@ -42,7 +42,8 @@ var AccountsList = function() {
                
   for (var i = 0; i < accounts.length; i++) {
     var accountIndex = i;
-    Gmail.Messages.list(accountIndex, function(data) {
+    var query = accounts[accountIndex].query || 'is:unread -is:mute';
+    Gmail.Messages.list(accountIndex, query, function(data) {
       this.menu.item(0, accountIndex, {
         title: accounts[accountIndex].name,
         subtitle: data.resultSizeEstimate + ' unread messages',

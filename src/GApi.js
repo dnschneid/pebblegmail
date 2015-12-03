@@ -2,6 +2,10 @@ var Settings = require('settings');
 var ajax = require('ajax');
 var ErrorCard = require('ErrorCard');
 
+/* FIXME: use settings.data for live tokens
+ * FIXME: don't use number-indexed arrays
+ */
+
 var GApi = {
   getAccessToken: function(i /* account index */, callback, errorCallback) {
     var accounts = Settings.option('accounts');
