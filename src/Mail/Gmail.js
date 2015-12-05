@@ -6,13 +6,13 @@ var Gmail = {
   Labels: {
     listCache_: null,
 
-    list: function(i, callback, errorCallback) {
+    list: function(account, callback, errorCallback) {
       if (this.listCache_) {
         callback(this.listCache_);
         return;
       }
 
-      GApi.getAccessToken(i, function(accessToken) {
+      GApi.getAccessToken(account, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/labels?access_token=' +
           encodeURIComponent(accessToken);
         
@@ -31,8 +31,8 @@ var Gmail = {
   },
   
   Messages: {
-    list: function(i, query, callback, errorCallback) {
-      GApi.getAccessToken(i, function(accessToken) {
+    list: function(account, query, callback, errorCallback) {
+      GApi.getAccessToken(account, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/messages' +
                   '?maxResults=20' +
                   '&q=' + encodeURIComponent(query) +
@@ -49,8 +49,8 @@ var Gmail = {
       }, errorCallback);
     },
     
-    get: function(i, messageId, callback, errorCallback) {
-      GApi.getAccessToken(i, function(accessToken) {
+    get: function(account, messageId, callback, errorCallback) {
+      GApi.getAccessToken(account, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/messages/' +
                   messageId +
                   '?access_token=' + encodeURIComponent(accessToken);
@@ -63,8 +63,8 @@ var Gmail = {
       }, errorCallback);
     },
 
-    modify: function(i, messageId, options, callback, errorCallback) {
-      GApi.getAccessToken(i, function(accessToken) {
+    modify: function(account, messageId, options, callback, errorCallback) {
+      GApi.getAccessToken(account, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/messages/' +
           messageId + '/modify' +
           '?access_token=' + encodeURIComponent(accessToken);

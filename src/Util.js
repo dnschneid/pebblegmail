@@ -1,7 +1,3 @@
-var UI = require('ui');
-var ajax = require('ajax');
-var appinfo = require('appinfo.json');
-
 var Util = {
   // Properly converts YYYY-MM-DD to a Date object in the local timezone.
   // (Why? new Date('YYYY-MM-DD') treats it as UTC.)

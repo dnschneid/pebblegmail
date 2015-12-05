@@ -2,35 +2,68 @@ var Settings = require('settings');
 var ajax = require('ajax');
 var ErrorCard = require('ErrorCard');
 
-/* FIXME: use settings.data for live tokens
- * FIXME: don't use number-indexed arrays
+/* FIXME: error callbacks should have the error message
  */
 
 var GApi = {
-  getAccessToken: function(i /* account index */, callback, errorCallback) {
-    var accounts = Settings.option('accounts');
-    if (!accounts || !accounts[i] || (!accounts[i].oauth && !accounts[i].key)) {
-      new ErrorCard('Not signed in', 'Sign in using the app configuration page.');
+  updateConfiguration: function(e) {
+    var data = Settings.data() || {};
+
+    /* Remove old accounts */
+    var accounts = e.options.accounts || [];
+    for (var key in data) {
+      if (key == 'secret') {
+        continue;
+      }
+      var keep = false;
+      for (var i = 0; i < accounts.length; i++) {
+        if (accounts[i].key == key) {
+          keep = true;
+          break;
+        }
+      }
+      if (!keep) {
+        data[key] = null;
+      }
+    }
+    
+    /* Keep secret */
+    if ('secret' in e.options) {
+      if (!e.options.secret) {
+        data.secret = null;
+      } else if (e.options.secret.length == 24) {
+        data.secret = e.options.secret;
+        Settings.option('secret', 'y');
+      }
+    }
+    
+    /* Save the data */
+    Settings.data(data);
+  },
+  
+  getAccessToken: function(account, callback, errorCallback) {
+    if (!account || !account.key) {
       if (errorCallback) errorCallback();
       return;
     }
+    var oauth = Settings.data(account.key);
     var now = new Date();
     var expiry = 0;
-    if (accounts[i].oauth) {
-      expiry = (accounts[i].oauth.created + accounts[i].oauth.expires_in) * 1000;
+    if (oauth) {
+      expiry = (oauth.created + oauth.expires_in) * 1000;
     }
     if (now.valueOf() < expiry) {
-      callback(accounts[i].oauth.access_token);
+      callback(oauth.access_token);
     } else {
       var request = { 'client_id': Settings.option('clientId'),
-                      'client_secret': Settings.option('secret') };
-      if (!accounts[i].oauth) {
+                      'client_secret': Settings.data('secret') };
+      if (!oauth) {
         request.grant_type = "authorization_code";
         request.redirect_uri = "urn:ietf:wg:oauth:2.0:oob";
-        request.code = accounts[i].key;
+        request.code = account.key;
       } else {
         request.grant_type = "refresh_token";
-        request.refresh_token = accounts[i].oauth.refresh_token;
+        request.refresh_token = oauth.refresh_token;
       }
       ajax({
         url: "https://www.googleapis.com/oauth2/v3/token",
@@ -39,14 +72,13 @@ var GApi = {
       }, function(data) {
         data = JSON.parse(data);
         if (data && data.access_token) {
-          accounts[i].oauth = accounts[i].oauth || {};
+          oauth = oauth || {};
           for (var key in data) {
-            accounts[i].oauth[key] = data[key];
+            oauth[key] = data[key];
           }
-          accounts[i].oauth.created = now.valueOf() / 1000;
-          accounts[i].key = null;
-          Settings.option('accounts', accounts);
-          callback(accounts[i].oauth.access_token);
+          oauth.created = now.valueOf() / 1000;
+          Settings.data(account.key, oauth);
+          callback(oauth.access_token);
         } else {
           new ErrorCard('Could not acquire Google access token');
           if (errorCallback) errorCallback();

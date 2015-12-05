@@ -2,14 +2,14 @@ var UI = require('ui');
 var Util = require('Util');
 var Gmail = require('Gmail');
 
-var MailActionsList = function(i, message, messagesList, messageCard) {
-  this.accountIndex = i;
+var MailActionsList = function(account, message, messagesList, messageCard) {
+  this.account = account;
   this.message = message;
   this.messagesList = messagesList;
   this.messageCard = messageCard;
   
   this.createMenu();
-  Gmail.Labels.list(i, function(data) {
+  Gmail.Labels.list(account, function(data) {
     this.labels = data.labels || [];
     this.updateMenu();
   }.bind(this), function() {
@@ -53,7 +53,7 @@ MailActionsList.prototype.createMenu = function() {
         icon: 'images/refresh.png'
       });
   
-      Gmail.Messages.modify(this.accountIndex, this.message.id, options, function(data) {
+      Gmail.Messages.modify(this.account, this.message.id, options, function(data) {
         if (this.messageCard) this.messageCard.card.hide();
         this.messagesList.updateMessage(this.message);
         this.menu.hide();

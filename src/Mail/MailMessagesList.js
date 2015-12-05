@@ -5,11 +5,11 @@ var Gmail = require('Mail/Gmail');
 var MailMessageCard = require('MailMessageCard');
 var MailActionsList = require('MailActionsList');
 
-var MailMessagesList = function(i, title, messages) {
+var MailMessagesList = function(account, title, messages) {
   if (messages.length === 0) {
     new ErrorCard('No unread messages');
   /*} else if (messages.length === 1) {
-    new MailMessageCard(i, messages[0]);*/
+    new MailMessageCard(account, messages[0]);*/
   } else {
     this.messages = messages;
     
@@ -22,18 +22,18 @@ var MailMessagesList = function(i, title, messages) {
   
     this.menu.on('select', function(e) {
       var message = e.item.message;
-      if (message) new MailMessageCard(i, message, this);
+      if (message) new MailMessageCard(account, message, this);
     }.bind(this));
       
     this.menu.on('longSelect', function(e) {
       var message = e.item.message;
-      if (message) new MailActionsList(i, message, this);
+      if (message) new MailActionsList(account, message, this);
     }.bind(this));
   
     this.menu.show();
     
     messages.map(function(message) {
-      Gmail.Messages.get(i, message.id, function(data) {
+      Gmail.Messages.get(account, message.id, function(data) {
         for (var field in data) {
           message[field] = data[field];
         }
