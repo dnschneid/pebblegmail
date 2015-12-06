@@ -39,7 +39,7 @@ var MailMessagesList = function(account, title, messages) {
         }
         this.updateMessage(message);
       }.bind(this), function() {
-        
+
       });
     }.bind(this));
   }

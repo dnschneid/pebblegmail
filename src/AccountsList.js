@@ -30,12 +30,12 @@ var AccountsList = function() {
 
   this.menu.on('select', function(e) {
     var messages = e.item.messages;
-    if (messages) new MailMessagesList(e.itemIndex, e.title, messages);
+    if (messages) new MailMessagesList(e.item.account, e.item.title, messages);
   }.bind(this));
 
   this.menu.on('longSelect', function(e) {
     var messages = e.item.messages;
-    if (messages) new MailMessagesList(e.itemIndex, e.title, messages);
+    if (messages) new MailMessagesList(e.item.account, e.item.title, messages);
   }.bind(this));
 
   this.menu.show();
@@ -46,8 +46,9 @@ var AccountsList = function() {
     Gmail.Messages.list(accounts[accountIndex], query, function(data) {
       this.menu.item(0, accountIndex, {
         title: accounts[accountIndex].name,
-        subtitle: data.resultSizeEstimate + ' unread messages',
-        messages: data.messages.length ? data.messages : null,
+        subtitle: data.resultSizeEstimate + ' messages',
+        account: accounts[accountIndex],
+        messages: data.messages && data.messages.length ? data.messages : null,
         icon: null
       });
     }.bind(this), function() {
