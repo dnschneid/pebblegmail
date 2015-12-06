@@ -43,10 +43,16 @@
         this.returnTo = decodeURIComponent(returnTo[1]);
       }
 
-      if (this.data.clientId && this.data.secret) {
+      if (this.data.clientId && this.data.secret == 'y') {
         document.getElementById('secrets').style.display = "none";
       } else {
         document.getElementById('newAccount').style.display = "none";
+        if (this.data.clientId) {
+          document.getElementById('clientId').value = this.data.clientId;
+        }
+        if (this.data.secret) {
+          document.getElementById('secret').value = this.data.secret;
+        }
       }
 
       if (this.data.accounts) {
