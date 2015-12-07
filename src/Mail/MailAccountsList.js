@@ -1,7 +1,7 @@
 var Settings = require('settings');
 var UI = require('ui');
-var Gmail = require('Mail/Gmail');
-var MailMessagesList = require('Mail/MailMessagesList');
+var Gmail = require('Gmail');
+var MailMessagesList = require('MailMessagesList');
 
 var AccountsList = function() {
   this.accounts = Settings.option('accounts');
