@@ -1,9 +1,5 @@
 var Settings = require('settings');
 var ajax = require('ajax');
-var ErrorCard = require('ErrorCard');
-
-/* FIXME: error callbacks should have the error message
- */
 
 var GApi = {
   updateConfiguration: function(e) {
@@ -45,7 +41,7 @@ var GApi = {
   
   getAccessToken: function(account, callback, errorCallback) {
     if (!account || !account.key) {
-      if (errorCallback) errorCallback();
+      if (errorCallback) errorCallback('No account available');
       return;
     }
     var oauth = Settings.data(account.key);
@@ -82,12 +78,10 @@ var GApi = {
           Settings.data(account.key, oauth);
           callback(oauth.access_token);
         } else {
-          new ErrorCard('Could not acquire Google access token');
-          if (errorCallback) errorCallback();
+          if (errorCallback) errorCallback('Could not acquire access token');
         }
       }, function(error) {
-        new ErrorCard('Could not request Google access token');
-        if (errorCallback) errorCallback();
+        if (errorCallback) errorCallback('Could not request access token');
       });
     }
   }

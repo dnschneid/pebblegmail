@@ -16,7 +16,12 @@ var MailMessagesList = function(account, title, messages) {
     this.menu = new UI.Menu({
       sections: [{
         title: title,
-        items: ''
+        items: messages.map(function(message) { return {
+          title: 'Loading...',
+          subtitle: '(' + message.id + ')',
+          message: null,
+          icon: 'images/refresh.png'
+         };})
       }]
     });
   
@@ -38,8 +43,8 @@ var MailMessagesList = function(account, title, messages) {
           message[field] = data[field];
         }
         this.updateMessage(message);
-      }.bind(this), function() {
-
+      }.bind(this), function(error) {
+        this.setMessageError(message, error);
       });
     }.bind(this));
   }
@@ -53,7 +58,18 @@ MailMessagesList.prototype.updateMessage = function(message) {
   this.menu.item(0, index, {
     title: Util.trimLine(Util.getMessageSubjectHeader(message)),
     subtitle: state + Util.trimLine(Util.getMessageFromHeader(message)),
-    message: message
+    message: message,
+    icon: null
+  });
+};
+
+MailMessagesList.prototype.setMessageError = function(message, error) {
+  var index = this.messages.indexOf(message);
+  this.menu.item(0, index, {
+    title: 'Error',
+    subtitle: error,
+    message: null,
+    icon: 'images/warning.png'
   });
 };
 

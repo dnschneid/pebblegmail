@@ -2,16 +2,26 @@ var Settings = require('settings');
 var UI = require('ui');
 var Gmail = require('Mail/Gmail');
 var MailMessagesList = require('Mail/MailMessagesList');
-var ErrorCard = require('ErrorCard');
 
 var AccountsList = function() {
   this.accounts = Settings.option('accounts');
   if (!this.accounts) {
-    if (!Settings.option('clientId') || !Settings.option('secret')) {
-      new ErrorCard('Set oauth2 client ID and secret on phone');
-    } else {
-      new ErrorCard('Add accounts via phone UI');
+    var sections = [];
+    if (!Settings.option('clientId') || !Settings.data('secret')) {
+      sections.push({ title: 'Configure on phone', items: [] });
+      if (!Settings.option('clientId')) {
+        sections[0].items.push({ title: 'OAuth2 client ID' });
+      }
+      if (!Settings.data('secret')) {
+        sections[0].items.push({ title: 'OAuth2 secret' });
+      }
     }
+    sections.push({
+      title: 'No accounts added',
+      items: [{ title: 'Add via phone UI' }]
+    });
+    this.menu = new UI.Menu({ sections: sections });
+    this.menu.show();
     return;
   }
   
@@ -47,11 +57,11 @@ var AccountsList = function() {
   }
 };
 
-AccountsList.prototype.updateAccount = function(account, data) {
+AccountsList.prototype.updateAccount = function(account, data, error) {
   var index = this.accounts.indexOf(account);
   this.menu.item(0, index, {
     title: account.name,
-    subtitle: data ? data.resultSizeEstimate + ' messages' : 'Failed to load messages',
+    subtitle: data ? data.resultSizeEstimate + ' messages' : error,
     account: account,
     messages: data && data.messages && data.messages.length ? data.messages : null,
     icon: data ? null : 'images/warning.png'

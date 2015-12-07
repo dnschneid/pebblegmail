@@ -1,6 +1,5 @@
 var ajax = require('ajax');
 var GApi = require('GApi');
-var ErrorCard = require('ErrorCard');
 
 var Gmail = {
   Labels: {
@@ -23,8 +22,7 @@ var Gmail = {
           this.listCache_ = data;
           callback(data);
         }.bind(this), function(error) {
-          new ErrorCard('Could not get labels list');
-          if (errorCallback) errorCallback();
+          if (errorCallback) errorCallback('Could not get labels list');
         }); 
       }.bind(this), errorCallback);
     }
@@ -43,10 +41,9 @@ var Gmail = {
         }, function(data) {
           callback(account, data);
         }, function(error) {
-          new ErrorCard('Could not get messages');
-          if (errorCallback) errorCallback(account);
+          if (errorCallback) errorCallback(account, null, 'Could not get messages');
         }); 
-      }, function() { errorCallback(account); });
+      }, function(error) { errorCallback(account, null, error); });
     },
     
     get: function(account, messageId, callback, errorCallback) {
@@ -58,7 +55,7 @@ var Gmail = {
           url: url,
           type: 'json'
         }, callback, function(error) {
-          if (errorCallback) errorCallback();
+          if (errorCallback) errorCallback('Could not get message');
         }); 
       }, errorCallback);
     },
@@ -75,14 +72,14 @@ var Gmail = {
           type: 'json',
           data: options
         }, callback, function(error) {
-          new ErrorCard('Could not modify labels');
-          if (errorCallback) errorCallback();
+          if (errorCallback) errorCallback('Could not modify labels');
         }); 
       }, errorCallback);
     }
   },
   
-  UNREAD_LABEL_ID: 'UNREAD'
+  UNREAD_LABEL_ID: 'UNREAD',
+  STARRED_LABEL_ID: 'STARRED'
 };
 
 module.exports = Gmail;

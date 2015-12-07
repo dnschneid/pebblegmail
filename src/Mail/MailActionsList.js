@@ -1,6 +1,7 @@
 var UI = require('ui');
 var Util = require('Util');
 var Gmail = require('Gmail');
+var ErrorCard = require('ErrorCard');
 
 var MailActionsList = function(account, message, messagesList, messageCard) {
   this.account = account;
@@ -12,8 +13,9 @@ var MailActionsList = function(account, message, messagesList, messageCard) {
   Gmail.Labels.list(account, function(data) {
     this.labels = data.labels || [];
     this.updateMenu();
-  }.bind(this), function() {
+  }.bind(this), function(error) {
     this.menu.hide();
+    new ErrorCard(this.account.name, error);
   }.bind(this));
 };
 
@@ -62,8 +64,9 @@ MailActionsList.prototype.createMenu = function() {
         if (this.messageCard) this.messageCard.card.hide();
         this.messagesList.updateMessage(this.message);
         this.menu.hide();
-      }.bind(this), function() {
+      }.bind(this), function(error) {
         this.menu.hide();
+        new ErrorCard(this.account.name, error);
       }.bind(this));
     }
   }.bind(this));
