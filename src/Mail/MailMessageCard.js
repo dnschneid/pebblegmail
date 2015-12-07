@@ -3,7 +3,6 @@ var Util = require('Util');
 var MailActionsList = require('MailActionsList');
 
 var MailMessageCard = function(account, message, messagesList) {
-  console.log(JSON.stringify(message));
   this.card = new UI.Card({
     subtitle: Util.getMessageSubjectHeader(message),
     body: Util.getMessageFromHeader(message) + '\n\n' + Util.decodeHTML(message.snippet),
