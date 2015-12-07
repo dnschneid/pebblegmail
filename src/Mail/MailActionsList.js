@@ -54,6 +54,11 @@ MailActionsList.prototype.createMenu = function() {
       });
   
       Gmail.Messages.modify(this.account, this.message.id, options, function(data) {
+        if (hasLabel) {
+          this.message.labelIds.splice(this.message.labelIds.indexOf(label.id), 1);
+        } else {
+          this.message.labelIds.push(label.id);
+        }
         if (this.messageCard) this.messageCard.card.hide();
         this.messagesList.updateMessage(this.message);
         this.menu.hide();

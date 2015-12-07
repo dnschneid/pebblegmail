@@ -47,12 +47,12 @@ var MailMessagesList = function(account, title, messages) {
 };
 
 MailMessagesList.prototype.updateMessage = function(message) {
-  /*var state = message.labelIds.indexOf('UNREAD') !== -1;*/
-  /* TODO: Update message state */
   var index = this.messages.indexOf(message);
+  var state = (message.labelIds.indexOf('STARRED') !== -1 ? '*' : '') +
+              (message.labelIds.indexOf('UNREAD') !== -1 ? '' : '®');
   this.menu.item(0, index, {
     title: Util.trimLine(Util.getMessageSubjectHeader(message)),
-    subtitle: Util.trimLine(Util.getMessageFromHeader(message)),
+    subtitle: state + Util.trimLine(Util.getMessageFromHeader(message)),
     message: message
   });
 };
