@@ -10,20 +10,22 @@ var GApi = {
     var data = Settings.data() || {};
 
     /* Remove old accounts */
-    var accounts = e.options.accounts || [];
-    for (var key in data) {
-      if (key == 'secret') {
-        continue;
-      }
-      var keep = false;
-      for (var i = 0; i < accounts.length; i++) {
-        if (accounts[i].key == key) {
-          keep = true;
-          break;
+    if ('accounts' in e.options) {
+      var accounts = e.options.accounts || [];
+      for (var key in data) {
+        if (key == 'secret') {
+          continue;
         }
-      }
-      if (!keep) {
-        data[key] = null;
+        var keep = false;
+        for (var i = 0; i < accounts.length; i++) {
+          if (accounts[i].key == key) {
+            keep = true;
+            break;
+          }
+        }
+        if (!keep) {
+          data[key] = null;
+        }
       }
     }
     

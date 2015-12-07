@@ -41,12 +41,12 @@ var Gmail = {
           url: url,
           type: 'json'
         }, function(data) {
-          callback(data);
+          callback(account, data);
         }, function(error) {
           new ErrorCard('Could not get messages');
-          if (errorCallback) errorCallback();
+          if (errorCallback) errorCallback(account);
         }); 
-      }, errorCallback);
+      }, function() { errorCallback(account); });
     },
     
     get: function(account, messageId, callback, errorCallback) {
