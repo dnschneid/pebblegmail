@@ -5,7 +5,9 @@ var MailActionsList = require('MailActionsList');
 var MailMessageCard = function(account, message, messagesList) {
   this.card = new UI.Card({
     subtitle: Util.getMessageSubjectHeader(message),
-    body: Util.getMessageFromHeader(message) + '\n\n' + Util.decodeHTML(message.snippet),
+    body: Util.getMessageFromHeader(message) + '\n' +
+          Util.getMessageDateTime(message) + '\n\n' +
+          Util.getMessageBody(message),
     scrollable: true,
     style: 'small'
   });
