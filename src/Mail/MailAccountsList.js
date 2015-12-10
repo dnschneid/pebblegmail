@@ -28,33 +28,45 @@ var AccountsList = function() {
   this.menu = new UI.Menu({
     sections: [{
       title: 'Gmail',
-      items: this.accounts.map(function(account) {
-        return {
-          title: account.name,
-          subtitle: 'Loading...',
-          icon: 'images/refresh.png'
-        };
-      })
+      items: {}
     }]
   });
 
   this.menu.on('select', function(e) {
     var messages = e.item.messages;
-    if (messages) new MailMessagesList(e.item.account, e.item.title, messages);
+    if (messages) {
+      new MailMessagesList(this, e.item.account, e.item.title, messages);
+    }
   }.bind(this));
 
   this.menu.on('longSelect', function(e) {
-    var messages = e.item.messages;
-    if (messages) new MailMessagesList(e.item.account, e.item.title, messages);
+    for (var i = 0; i < this.accounts.length; i++) {
+      this.refreshAccount(this.accounts[i]);
+    }
   }.bind(this));
 
-  this.menu.show();
-               
   for (var i = 0; i < this.accounts.length; i++) {
-    var query = this.accounts[i].query || 'is:unread -is:mute';
-    Gmail.Messages.list(this.accounts[i], query,
-                        this.updateAccount.bind(this), this.updateAccount.bind(this));
+    this.refreshAccount(this.accounts[i]);
   }
+
+  this.menu.show();
+};
+
+AccountsList.prototype.refreshAccount = function(account) {
+  if (account.refreshing) {
+    return;
+  }
+  account.refreshing = true;
+  var index = this.accounts.indexOf(account);
+  this.menu.item(0, index, {
+    title: account.name,
+    subtitle: 'Loading...',
+    icon: 'images/refresh.png',
+    account: account,
+    messages: null
+  });
+  Gmail.Messages.list(account, account.query || 'is:unread -is:mute',
+      this.updateAccount.bind(this), this.updateAccount.bind(this));
 };
 
 AccountsList.prototype.updateAccount = function(account, data, error) {
@@ -62,10 +74,11 @@ AccountsList.prototype.updateAccount = function(account, data, error) {
   this.menu.item(0, index, {
     title: account.name,
     subtitle: data ? data.resultSizeEstimate + ' messages' : error,
+    icon: data ? null : 'images/warning.png',
     account: account,
-    messages: data && data.messages && data.messages.length ? data.messages : null,
-    icon: data ? null : 'images/warning.png'
+    messages: data && data.messages && data.messages.length ? data.messages : null
   });
+  account.refreshing = false;
 };
 
 module.exports = AccountsList;
