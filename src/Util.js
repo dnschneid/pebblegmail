@@ -25,8 +25,8 @@ var Util = {
   
   // 'Wed Jul 28 19:00'
   getMessageDateTime: function(message) {
-    var date = new Date(message.internalDate);
-    return Util.formatDate(date) + ' ' + Util.formatTime(date);
+    var date = new Date(+message.internalDate);
+    return Util.formatDate(date) + ', ' + Util.formatTime(date);
   },
 
   getMessageHeader: function(message, headerName) {
