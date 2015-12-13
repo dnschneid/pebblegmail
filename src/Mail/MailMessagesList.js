@@ -14,6 +14,7 @@ var MailMessagesList = function(accountsList, account, title, messages) {
   this.messages = messages;
 
   this.menu = new UI.Menu({
+    highlightBackgroundColor: Gmail.COLOR,
     sections: [{
       title: title,
       items: messages.map(function(message) { return {
@@ -55,8 +56,8 @@ var MailMessagesList = function(accountsList, account, title, messages) {
 
 MailMessagesList.prototype.updateMessage = function(message) {
   var index = this.messages.indexOf(message);
-  var state = (message.labelIds.indexOf('STARRED') !== -1 ? '*' : '') +
-              (message.labelIds.indexOf('UNREAD') !== -1 ? '' : '®');
+  var state = (message.labelIds.indexOf(Gmail.STARRED_LABEL_ID) !== -1 ? '*' : '') +
+              (message.labelIds.indexOf(Gmail.UNREAD_LABEL_ID) !== -1 ? '' : '®');
   this.menu.item(0, index, {
     title: Util.trimLine(Util.getMessageSubjectHeader(message)),
     subtitle: state + Util.trimLine(Util.getMessageFromHeader(message)),

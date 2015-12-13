@@ -79,7 +79,8 @@ var Gmail = {
   },
   
   UNREAD_LABEL_ID: 'UNREAD',
-  STARRED_LABEL_ID: 'STARRED'
+  STARRED_LABEL_ID: 'STARRED',
+  COLOR: '#d71900'  /* attempting to match #d44937 */
 };
 
 module.exports = Gmail;

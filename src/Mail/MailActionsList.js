@@ -22,6 +22,7 @@ var MailActionsList = function(account, message, messagesList, messageCard) {
 MailActionsList.prototype.createMenu = function() {
   var subject = Util.getMessageSubjectHeader(this.message);
   this.menu = new UI.Menu({
+    highlightBackgroundColor: Gmail.COLOR,
     sections: [{
       title: Util.trimLine(subject),
       items: [{

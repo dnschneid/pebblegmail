@@ -20,12 +20,16 @@ var AccountsList = function() {
       title: 'No accounts added',
       items: [{ title: 'Add via phone UI' }]
     });
-    this.menu = new UI.Menu({ sections: sections });
+    this.menu = new UI.Menu({
+      highlightBackgroundColor: Gmail.COLOR,
+      sections: sections
+    });
     this.menu.show();
     return;
   }
   
   this.menu = new UI.Menu({
+    highlightBackgroundColor: Gmail.COLOR,
     sections: [{
       title: 'Gmail',
       items: {}
