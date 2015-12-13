@@ -34,21 +34,17 @@ MailActionsList.prototype.createMenu = function() {
   this.menu.on('select', function(e) {
     var label = e.item.label;
     if (label) {
-      var hasLabel = this.message.labelIds.indexOf(label.id) !== -1;
-      var removeUnread = false;
-  
       var options = {
         removeLabelIds: [],
         addLabelIds: []
       };
-      if (hasLabel) {
+      if (this.message.labelIds.indexOf(label.id) !== -1) {
         options.removeLabelIds.push(label.id);
       } else {
         options.addLabelIds.push(label.id);
       }
       
       if (label.id !== Gmail.UNREAD_LABEL_ID && this.message.labelIds.indexOf(Gmail.UNREAD_LABEL_ID) !== -1) {
-        removeUnread = true;
         options.removeLabelIds.push(Gmail.UNREAD_LABEL_ID);
       }
       
@@ -58,13 +54,12 @@ MailActionsList.prototype.createMenu = function() {
       });
   
       Gmail.Messages.modify(this.account, this.message.id, options, function(data) {
-        if (hasLabel) {
-          this.message.labelIds.splice(this.message.labelIds.indexOf(label.id), 1);
-        } else {
-          this.message.labelIds.push(label.id);
+        var i;
+        for (i = 0; i < options.addLabelIds.length; i++) {
+          this.message.labelIds.push(options.addLabelIds[i]);
         }
-        if (removeUnread) {
-          this.message.labelIds.splice(this.message.labelIds.indexOf(Gmail.UNREAD_LABEL_ID), 1);
+        for (i = 0; i < options.removeLabelIds.length; i++) {
+          this.message.labelIds.splice(this.message.labelIds.indexOf(options.removeLabelIds[i]), 1);
         }
         if (this.messageCard) this.messageCard.card.hide();
         this.messagesList.updateMessage(this.message);
