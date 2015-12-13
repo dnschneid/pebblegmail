@@ -29,6 +29,26 @@
                 "type": "font"
             },
             {
+                "file": "images/starread.png",
+                "name": "IMAGES_STARREAD_PNG",
+                "type": "png"
+            },
+            {
+                "file": "images/star.png",
+                "name": "IMAGES_STAR_PNG",
+                "type": "png"
+            },
+            {
+                "file": "images/unread.png",
+                "name": "IMAGES_UNREAD_PNG",
+                "type": "png"
+            },
+            {
+                "file": "images/read.png",
+                "name": "IMAGES_READ_PNG",
+                "type": "png"
+            },
+            {
                 "file": "images/tile_splash.png",
                 "name": "IMAGES_TILE_SPLASH_PNG",
                 "type": "png"
