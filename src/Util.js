@@ -142,15 +142,13 @@ var Util = {
   systemLabelSortComparator: function(a, b) {
     var priorities = {
       UNREAD: 1,
-      IMPORTANT: 2,
-      INBOX: 3,
-      STARRED: 4,
-      DRAFT: 5,
-      SENT: 6,
-      SPAM: 7,
-      TRASH: 8
+      STARRED: 2,
+      IMPORTANT: 3,
+      INBOX: 4,
+      SPAM: 5,
+      TRASH: 6
     };
-    return priorities[a.label.id] - priorities[b.label.id];
+    return (priorities[a.label.id] || 9) - (priorities[b.label.id] || 9);
   }
 };
 

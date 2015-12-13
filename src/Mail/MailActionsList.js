@@ -124,7 +124,8 @@ MailActionsList.prototype.updateMenu = function() {
 MailActionsList.prototype.canModifyLabel = function(label) {
   var unmodifiableLabels = {
     DRAFT: true,
-    SENT: true
+    SENT: true,
+    CHAT: true
   };
   return !unmodifiableLabels[label.id];
 };
