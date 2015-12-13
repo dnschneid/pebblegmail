@@ -35,6 +35,7 @@ MailActionsList.prototype.createMenu = function() {
     var label = e.item.label;
     if (label) {
       var hasLabel = this.message.labelIds.indexOf(label.id) !== -1;
+      var removeUnread = false;
   
       var options = {
         removeLabelIds: [],
@@ -47,6 +48,7 @@ MailActionsList.prototype.createMenu = function() {
       }
       
       if (label.id !== Gmail.UNREAD_LABEL_ID && this.message.labelIds.indexOf(Gmail.UNREAD_LABEL_ID) !== -1) {
+        removeUnread = true;
         options.removeLabelIds.push(Gmail.UNREAD_LABEL_ID);
       }
       
@@ -60,6 +62,9 @@ MailActionsList.prototype.createMenu = function() {
           this.message.labelIds.splice(this.message.labelIds.indexOf(label.id), 1);
         } else {
           this.message.labelIds.push(label.id);
+        }
+        if (removeUnread) {
+          this.message.labelIds.splice(this.message.labelIds.indexOf(Gmail.UNREAD_LABEL_ID), 1);
         }
         if (this.messageCard) this.messageCard.card.hide();
         this.messagesList.updateMessage(this.message);
