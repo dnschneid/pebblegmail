@@ -29,6 +29,11 @@
                 "type": "font"
             },
             {
+                "file": "images/tile_splash.png",
+                "name": "IMAGES_TILE_SPLASH_PNG",
+                "type": "png"
+            },
+            {
                 "file": "images/warning.png",
                 "name": "IMAGES_WARNING_PNG",
                 "type": "png"
