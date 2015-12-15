@@ -1,35 +1,118 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
-  <title>Gmail Settings</title>
+  <head>
+  <title>Gmail Configuration</title>
+  <link rel='stylesheet' type='text/css' href='css/slate.min.css'>
+  <script src='js/slate.min.js'></script>
+  <style>
+  .title {
+    padding: 15px 10px;
+    text-transform: uppercase;
+    font-family: 'PT Sans', sans-serif;
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #888888;
+    text-align: center;
+  }
+  </style>
+  </head>
 
-  <link rel="stylesheet" href="css/style.css">
-</head>
-<body>
-  <h1 id="reload">Gmail</h1>
-  <ul id="accounts"><li>No accounts added.</li></ul>
+  <body>
+    <h1 class='title'>Gmail Configuration</h1>
 
-  <span id="secrets">
-    You must first provide an oauth2 client ID and secret.<br />
-    Client ID: <input type="text" id="clientId"><br />
-    Secret: <input type="text" id="secret">
-    <a class="btn btn-blue" id="saveSecrets">Store ID and Secret</a>
-  </span>
+    <div class='item-container' id='secrets' style='display: none'>
+      <div class='item-container-header'>OAuth2 Data</div>
+      <div class='item-container-content'>
+        <label class='item'>
+          Client ID
+          <div class='item-input-wrapper'>
+            <input type='text' class='item-input' id='clientId'
+                   placeholder='123456789012-abcdefghijklmnopqrstuvwxyz123456.apps.googleusercontent.com'>
+          </div>
+        </label>
+        <label class='item'>
+          Client secret
+          <div class='item-input-wrapper'>
+            <input type='text' class='item-input' id='secret'
+                   placeholder='abcdefghijklmnopqrstuvwx'>
+          </div>
+        </label>
+      </div>
+      <div class='item-container-footer'>
+        You can generate a set for free from the Google Developer Console.
+      </div>
+    </div>
 
-  <span id="newAccount">
-  <a class="btn btn-blue" id="signIn">Get Key</a>
-  New Account Name: <input type="text" id="name"><br />
-  Paste key here: <input type="text" id="key"><br />
-  <a class="btn btn-blue" id="add">Add Google account</a>
-  </span>
+    <div id='accounts' style='display: none'>
+      <div class='item-container'>
+        <div class='item-container-header'>Accounts and Queries</div>
+        <div class='item-container-content'>
+          <div class='item'>
+            Tap an entry to modify it.
+            <div class='button-container'>
+              <input type='button' class='item-button item-input-button' id='add' value='ADD'>
+            </div>
+          </div>
+          <div class='item-draggable-list' id='accountList'></div>
+        </div>
+        <div class='item-container-content' id='accountData' style='display: none'>
+          <label class='item'>
+            <div class='item-input-wrapper item-input-wrapper-button'>
+              <input type='text' class='item-input' id='key'
+                     placeholder='Auth key (1/xyz)'>
+            </div>
+            <input type='button' class='item-button item-input-button'
+                   id='signIn' value='GET KEY'>
+          </label>
+          <label class='item'>
+            Name
+            <div class='item-input-wrapper'>
+              <input type='text' class='item-input' id='name'
+                     placeholder='Label to identify this account'>
+            </div>
+          </label>
+          <label class='item'>
+            Query
+            <div class='item-input-wrapper'>
+              <input type='text' class='item-input' id='query'
+                     placeholder='is:unread !is:mute'>
+            </div>
+          </label>
+          <div class='item-container'>
+            <div class='button-container'>
+              <input type='button' class='item-button' id='remove' value='REMOVE'>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class='item-container-footer'>
+        You can reuse auth keys multiple times for the same account.
+      </div>
+    </div>
 
-  <a class="btn btn-red" id="clear">Clear data</a>
+    <div class='item-container'>
+      <div class='button-container'>
+        <input type='button' class='item-button' id='save' value='SAVE CONFIGURATION'>
+      </div>
+      <div class='item-container-footer'>
+        Sends all configuration data to your Pebble.
+      </div>
+    </div>
 
+    <div class='item-container'>
+      <div class='button-container'>
+        <input type='button' class='item-button' id='clear'
+               value='CLEAR ALL DATA'>
+      </div>
+      <div class='item-container-footer'>
+        Deletes all temporary authorizations as well. This cannot be undone.
+      </div>
+    </div>
+  </body>
   <script>
   var ConfigurePage = {
     data: {},
-
+    activeAccount: -1,
     returnTo: 'pebblejs://close#',
 
     init: function() {
@@ -37,43 +120,93 @@
       if (hash) {
         this.data = JSON.parse(decodeURIComponent(/#([^?]*)/.exec(hash)[1]));
       }
+      this.data.accounts = this.data.accounts || [];
 
       var returnTo = /return_to=([^#?&]*)/.exec(window.location.href);
       if (returnTo) {
         this.returnTo = decodeURIComponent(returnTo[1]);
+        if (this.returnTo == 'self') {
+          this.returnTo = "index.html?return_to=self#";
+        }
       }
 
-      if (this.data.clientId && this.data.secret == 'y') {
-        document.getElementById('secrets').style.display = "none";
+      if (localStorage.unsaved) {
+        var unsaved = JSON.parse(localStorage.unsaved);
+        for (var key in unsaved) {
+          this.data[key] = unsaved[key];
+        }
+        localStorage.clear();
+      }
+
+      if (this.data.clientId && this.secretIsValid()) {
+        document.getElementById('accounts').style.display = "";
       } else {
-        document.getElementById('newAccount').style.display = "none";
-        if (this.data.clientId) {
-          document.getElementById('clientId').value = this.data.clientId;
-        }
-        if (this.data.secret) {
-          document.getElementById('secret').value = this.data.secret;
-        }
+        document.getElementById('secrets').style.display = "";
+        document.getElementById('clientId').value = this.data.clientId || '';
+        document.getElementById('secret').value = this.data.secret || '';
       }
 
-      if (this.data.accounts) {
-        var accounts = document.getElementById('accounts');
-        accounts.removeChild(accounts.childNodes[0]);
-        this.data.accounts.forEach(function(account) {
-          var item = document.createElement("li");
-          var value = document.createTextNode(account.name);
-          item.appendChild(value);
-          accounts.appendChild(item)
-        });
-      }
+      this.updateAccountList();
     },
 
-    saveSecrets: function() {
-      this.data.clientId = document.getElementById('clientId').value;
-      this.data.secret = document.getElementById('secret').value;
-      this.returnData();
+    collectData: function() {
+      this.data.clientId = document.getElementById('clientId').value ||
+                           this.data.clientId;
+      var secret = document.getElementById('secret').value;
+      if (secret && secret != 'y') {
+        this.data.secret = secret;
+      }
+      this.updateAccount();
+      this.applyAccountOrder();
+      localStorage.unsaved = JSON.stringify(this.data);
+    },
+
+    secretIsValid: function() {
+      return this.data.secret &&
+             (this.data.secret == 'y' || this.data.secret.length == 24);
+    },
+
+    applyAccountOrder: function(reference) {
+      var accounts = [];
+      var accountList = document.getElementById('accountList').children;
+      var newActiveAccount = -1;
+      var newReference = reference;
+      for (var i = 0; i < accountList.length; i++) {
+        var oldIndex = accountList[i].getAttribute('index');
+        accounts.push(this.data.accounts[oldIndex]);
+        if (this.activeAccount == oldIndex) {
+          newActiveAccount = i;
+        }
+        if (reference == oldIndex) {
+          newReference = i;
+        }
+      }
+      this.data.accounts = accounts;
+      this.activeAccount = newActiveAccount;
+      this.updateAccountList();
+      return newReference;
+    },
+
+    updateAccountList: function() {
+      var accountList = document.getElementById('accountList');
+      var $list = $("<div class='item-draggable-list' id='accountList'>" +
+          this.data.accounts.map(function(account) {
+            return "<label class='item' index='" +
+                     this.data.accounts.indexOf(account) +
+                   "'>" + account.name + "</label>";
+          }.bind(this)).join("") +
+          "</div>");
+      $list.itemDraggableList();
+      $list.children('label').each(function() {
+        this.addEventListener('click', function() {
+          ConfigurePage.editAccount(this.getAttribute('index'));
+        }.bind(this));
+      });
+      $(accountList).replaceWith($list);
     },
 
     signIn: function() {
+      this.collectData();
       window.location.href =
         "https://accounts.google.com/o/oauth2/auth"
           + "?response_type=code"
@@ -83,47 +216,101 @@
     },
 
     add: function() {
-      var name = document.getElementById('name').value;
-      var key = document.getElementById('key').value;
-      if (name && key) {
-        this.data.accounts = this.data.accounts || [];
-        this.data.accounts.push({ 'name': name, 'key': key });
-        this.returnData();
+      this.applyAccountOrder();
+      this.data.accounts.push({ 'name': 'New Account', 'key': '', 'query': '' });
+      this.updateAccountList();
+      this.editAccount(this.data.accounts.length - 1);
+    },
+
+    remove: function() {
+      this.applyAccountOrder();
+      this.data.accounts.splice(this.activeAccount, 1);
+      this.updateAccountList();
+      this.editAccount(-1);
+    },
+
+    editAccount: function(index) {
+      index = this.applyAccountOrder(index);
+      if (index >= 0) {
+        var account = this.data.accounts[index];
+
+        var key = document.getElementById('key');
+        key.value = account.key || '';
+        if (account.key.length > 5) {
+          document.getElementById('signIn').style.display = 'none';
+          key.readOnly = true;
+        } else {
+          document.getElementById('signIn').style.display = '';
+          key.readOnly = false;
+        }
+
+        document.getElementById('name').value = account.name;
+        document.getElementById('query').value = account.query || '';
+
+        document.getElementById('accountData').style.display = '';
+      } else {
+        document.getElementById('accountData').style.display = 'none';
       }
+      this.activeAccount = index;
+    },
+
+    updateAccount: function() {
+      if (this.activeAccount == -1) {
+        return;
+      }
+      this.applyAccountOrder();
+      var account = this.data.accounts[this.activeAccount];
+      account.key = document.getElementById('key').value;
+      account.name = document.getElementById('name').value;
+      account.query = document.getElementById('query').value;
+
+      this.updateAccountList();
+    },
+
+    updateSecret() {
+      this.collectData();
+      document.getElementById('accounts').style.display =
+         this.data.clientId && this.secretIsValid() ? "" : "none";
+    },
+
+    save: function() {
+      this.collectData();
+      this.returnData();
     },
 
     clear: function() {
       this.data = { 'accounts': null, 'clientId': null, 'secret': null };
+      localStorage.clear();
       this.returnData();
     },
 
     returnData: function() {
       window.location.href = this.returnTo +
         encodeURIComponent(JSON.stringify(this.data));
-    },
-
-    reload: function() {
-      window.location.reload(true /* forcedReload */);
     }
   };
 
-  document.getElementById('saveSecrets').addEventListener('click', function() {
-    ConfigurePage.saveSecrets();
-  });
-  document.getElementById('signIn').addEventListener('click', function() {
-    ConfigurePage.signIn();
-  });
-  document.getElementById('add').addEventListener('click', function() {
-    ConfigurePage.add();
-  });
-  document.getElementById('clear').addEventListener('click', function() {
-    ConfigurePage.clear();
-  });
-  document.getElementById('reload').addEventListener('click', function() {
-    ConfigurePage.reload();
-  });
+  document.getElementById('clientId').addEventListener('input',
+    ConfigurePage.updateSecret.bind(ConfigurePage));
+  document.getElementById('secret').addEventListener('input',
+    ConfigurePage.updateSecret.bind(ConfigurePage));
+  document.getElementById('key').addEventListener('input',
+    ConfigurePage.updateAccount.bind(ConfigurePage));
+  document.getElementById('name').addEventListener('input',
+    ConfigurePage.updateAccount.bind(ConfigurePage));
+  document.getElementById('query').addEventListener('input',
+    ConfigurePage.updateAccount.bind(ConfigurePage));
+  document.getElementById('signIn').addEventListener('click',
+    ConfigurePage.signIn.bind(ConfigurePage));
+  document.getElementById('add').addEventListener('click',
+    ConfigurePage.add.bind(ConfigurePage));
+  document.getElementById('remove').addEventListener('click',
+    ConfigurePage.remove.bind(ConfigurePage));
+  document.getElementById('save').addEventListener('click',
+    ConfigurePage.save.bind(ConfigurePage));
+  document.getElementById('clear').addEventListener('click',
+    ConfigurePage.clear.bind(ConfigurePage));
 
   ConfigurePage.init();
   </script>
-</body>
 </html>
