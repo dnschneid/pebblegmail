@@ -37,6 +37,10 @@ var GApi = {
     
     /* Save the data */
     Settings.data(data);
+    
+    if (this.onUpdate) {
+      this.onUpdate();
+    }
   },
   
   getAccessToken: function(account, callback, errorCallback) {
