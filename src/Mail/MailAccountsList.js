@@ -6,23 +6,12 @@ var MailMessagesList = require('MailMessagesList');
 var AccountsList = function() {
   this.accounts = Settings.option('accounts');
   if (!this.accounts) {
-    var sections = [];
-    if (!Settings.option('clientId') || !Settings.data('secret')) {
-      sections.push({ title: 'Configure on phone', items: [] });
-      if (!Settings.option('clientId')) {
-        sections[0].items.push({ title: 'OAuth2 client ID' });
-      }
-      if (!Settings.data('secret')) {
-        sections[0].items.push({ title: 'OAuth2 secret' });
-      }
-    }
-    sections.push({
-      title: 'No accounts added',
-      items: [{ title: 'Add via phone UI' }]
-    });
     this.menu = new UI.Menu({
       highlightBackgroundColor: Gmail.COLOR,
-      sections: sections
+      sections: [{
+        title: 'No accounts added',
+        items: [{ title: 'Add via phone UI' }]
+      }]
     });
     this.menu.show();
     return;
