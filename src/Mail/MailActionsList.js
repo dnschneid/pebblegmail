@@ -8,7 +8,7 @@ var MailActionsList = function(account, message, messagesList, messageCard) {
   this.message = message;
   this.messagesList = messagesList;
   this.messageCard = messageCard;
-  
+
   this.createMenu();
   Gmail.Labels.list(account, function(data) {
     this.labels = data.labels || [];
@@ -44,16 +44,16 @@ MailActionsList.prototype.createMenu = function() {
       } else {
         options.addLabelIds.push(label.id);
       }
-      
+
       if (label.id !== Gmail.UNREAD_LABEL_ID && this.message.labelIds.indexOf(Gmail.UNREAD_LABEL_ID) !== -1) {
         options.removeLabelIds.push(Gmail.UNREAD_LABEL_ID);
       }
-      
+
       this.menu.item(e.sectionIndex, e.itemIndex, {
         title: 'Loading...',
         icon: 'images/refresh.png'
       });
-  
+
       Gmail.Messages.modify(this.account, this.message.id, options, function(data) {
         var i;
         for (i = 0; i < options.addLabelIds.length; i++) {

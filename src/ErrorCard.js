@@ -8,15 +8,15 @@ var ErrorCard = function(subtitle, body) {
     body: body,
     scrollable: true
   });
-  
+
   this.card.on('click', 'select', function() {
     this.card.hide();
   }.bind(this));
-  
+
   this.card.on('longClick', 'select', function() {
     this.card.hide();
   }.bind(this));
-  
+
   this.card.show();
 };
 

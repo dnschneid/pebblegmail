@@ -10,7 +10,7 @@ var MailMessagesList = function(accountsList, account, title, messages) {
     new ErrorCard('No unread messages');
     return;
   }
-  
+
   this.messages = messages;
 
   this.menu = new UI.Menu({

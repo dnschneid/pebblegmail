@@ -16,7 +16,7 @@ var AccountsList = function() {
     this.menu.show();
     return;
   }
-  
+
   this.menu = new UI.Menu({
     highlightBackgroundColor: Gmail.COLOR,
     sections: [{

@@ -14,7 +14,7 @@ var Gmail = {
       GApi.getAccessToken(account, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/labels?access_token=' +
           encodeURIComponent(accessToken);
-        
+
         ajax({
           url: url,
           type: 'json'
@@ -23,11 +23,11 @@ var Gmail = {
           callback(data);
         }.bind(this), function(error) {
           if (errorCallback) errorCallback('Could not get labels list');
-        }); 
+        });
       }.bind(this), errorCallback);
     }
   },
-  
+
   Messages: {
     list: function(account, query, callback, errorCallback) {
       GApi.getAccessToken(account, function(accessToken) {
@@ -42,10 +42,10 @@ var Gmail = {
           callback(account, data);
         }, function(error) {
           if (errorCallback) errorCallback(account, null, 'Could not get messages');
-        }); 
+        });
       }, function(error) { errorCallback(account, null, error); });
     },
-    
+
     get: function(account, messageId, callback, errorCallback) {
       GApi.getAccessToken(account, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/messages/' +
@@ -56,7 +56,7 @@ var Gmail = {
           type: 'json'
         }, callback, function(error) {
           if (errorCallback) errorCallback('Could not get message');
-        }); 
+        });
       }, errorCallback);
     },
 
@@ -73,11 +73,11 @@ var Gmail = {
           data: options
         }, callback, function(error) {
           if (errorCallback) errorCallback('Could not modify labels');
-        }); 
+        });
       }, errorCallback);
     }
   },
-  
+
   UNREAD_LABEL_ID: 'UNREAD',
   STARRED_LABEL_ID: 'STARRED',
   COLOR: '#d71900'  /* attempting to match #d44937 */

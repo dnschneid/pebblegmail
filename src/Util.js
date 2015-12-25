@@ -3,16 +3,16 @@ var Util = {
   formatTime: function(date) {
     return date.toTimeString().substring(0, 5);
   },
-  
+
   // 'Wed Jul 28'
   formatDate: function(date) {
     return date.toDateString().substring(0, 10);
   },
-  
+
   trimLine: function(str) {
     return str.substring(0, 30);
   },
-  
+
   // 'Wed Jul 28 19:00'
   getMessageDateTime: function(message) {
     var date = new Date(+message.internalDate);
@@ -28,7 +28,7 @@ var Util = {
     }
     return '';
   },
-  
+
   getMessageFromHeader: function(message) {
     var from = this.getMessageHeader(message, 'From');
     var bracketIndex = from.indexOf('<');
@@ -40,11 +40,11 @@ var Util = {
       return from;
     }
   },
-  
+
   getMessageSubjectHeader: function(message) {
     return this.getMessageHeader(message, 'Subject') || '(no subject)';
   },
-  
+
   // Decodes html text from html entities and tags
   // Credit: https://gist.github.com/CatTail/4174511
   decodeHTML: function(str) {
@@ -53,11 +53,11 @@ var Util = {
       return String.fromCharCode(dec);
     });
   },
-  
+
   // Decodes base64
   // Credit: http://ntt.cc/2008/01/19/base64-encoder-decoder-with-javascript.html
   base64keyStr: "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
-                "abcdefghijklmnopqrstuvwxyz" + 
+                "abcdefghijklmnopqrstuvwxyz" +
                 "0123456789-_=",
   decode64: function(input, maxlength) {
     var output = "";
@@ -93,7 +93,7 @@ var Util = {
 
     return output;
   },
-  
+
   /* Recursively grabs the first text part of multipart messages
    * Prefers plaintext over html. */
   getMessageBody: function(message) {
@@ -119,7 +119,7 @@ var Util = {
     }
     return body;
   },
-  
+
   getFriendlyLabelName: function(label) {
     if (label.type === 'system') {
       var match = /^CATEGORY_(.*)$/.exec(label.id);
@@ -128,17 +128,17 @@ var Util = {
       } else {
         return Util.capitalize(label.name);
       }
-    } 
+    }
     return label.name;
   },
-  
+
   capitalize: function(str) {
     if (str) {
       return str[0].toUpperCase() + str.substring(1).toLowerCase();
     }
     return '';
   },
-  
+
   systemLabelSortComparator: function(a, b) {
     var priorities = {
       UNREAD: 1,

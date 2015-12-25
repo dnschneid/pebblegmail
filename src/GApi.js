@@ -24,7 +24,7 @@ var GApi = {
         }
       }
     }
-    
+
     /* Keep secret */
     if ('secret' in e.options) {
       if (!e.options.secret) {
@@ -34,15 +34,15 @@ var GApi = {
         Settings.option('secret', 'y');
       }
     }
-    
+
     /* Save the data */
     Settings.data(data);
-    
+
     if (this.onUpdate) {
       this.onUpdate();
     }
   },
-  
+
   getAccessToken: function(account, callback, errorCallback) {
     if (!account || !account.key) {
       if (errorCallback) errorCallback('No account available');
