@@ -50,7 +50,7 @@ var MailMessagesList = function(accountsList, account, title, messages) {
       this.updateMessage(message);
     }.bind(this), function(error) {
       this.setMessageError(message, error);
-    });
+    }.bind(this));
   }.bind(this));
 };
 
