@@ -5,9 +5,16 @@ var ErrorCard = require('ErrorCard');
 
 var MailActionsList = function(account, message, messagesList, messageCard) {
   this.account = account;
-  this.message = message;
+  this.thread = message.messages ? message : null;
+  this.messages = message.messages || [message];
   this.messagesList = messagesList;
   this.messageCard = messageCard;
+  this.labelIds = {};
+  this.messages.forEach(function (message) {
+    for (var i = 0; i < message.labelIds.length; i++) {
+      this.labelIds[message.labelIds[i]] = true;
+    }
+  }.bind(this));
 
   this.createMenu();
   Gmail.Labels.list(account, function(data) {
@@ -20,7 +27,7 @@ var MailActionsList = function(account, message, messagesList, messageCard) {
 };
 
 MailActionsList.prototype.createMenu = function() {
-  var subject = Util.getMessageSubjectHeader(this.message);
+  var subject = Util.getMessageSubjectHeader(this.messages[0]);
   this.menu = new UI.Menu({
     highlightBackgroundColor: Gmail.COLOR,
     sections: [{
@@ -35,17 +42,19 @@ MailActionsList.prototype.createMenu = function() {
   this.menu.on('select', function(e) {
     var label = e.item.label;
     if (label) {
+      this.menu.on('select', null);
+
       var options = {
         removeLabelIds: [],
         addLabelIds: []
       };
-      if (this.message.labelIds.indexOf(label.id) !== -1) {
+      if (this.labelIds[label.id]) {
         options.removeLabelIds.push(label.id);
       } else {
         options.addLabelIds.push(label.id);
       }
 
-      if (label.id !== Gmail.UNREAD_LABEL_ID && this.message.labelIds.indexOf(Gmail.UNREAD_LABEL_ID) !== -1) {
+      if (!this.thread && label.id !== Gmail.UNREAD_LABEL_ID) {
         options.removeLabelIds.push(Gmail.UNREAD_LABEL_ID);
       }
 
@@ -54,21 +63,25 @@ MailActionsList.prototype.createMenu = function() {
         icon: 'images/refresh.png'
       });
 
-      Gmail.Messages.modify(this.account, this.message.id, options, function(data) {
-        var i;
-        for (i = 0; i < options.addLabelIds.length; i++) {
-          this.message.labelIds.push(options.addLabelIds[i]);
-        }
-        for (i = 0; i < options.removeLabelIds.length; i++) {
-          this.message.labelIds.splice(this.message.labelIds.indexOf(options.removeLabelIds[i]), 1);
-        }
-        if (this.messageCard) this.messageCard.card.hide();
-        this.messagesList.updateMessage(this.message);
-        this.menu.hide();
-      }.bind(this), function(error) {
-        this.menu.hide();
-        new ErrorCard(this.account.name, error);
-      }.bind(this));
+      (this.thread ? Gmail.Threads.modify : Gmail.Messages.modify)
+        (this.account, (this.thread ? this.thread.id : this.messages[0].id),
+         options, function(data) {
+          this.messages.forEach(function (message) {
+            var i;
+            for (i = 0; i < options.addLabelIds.length; i++) {
+              message.labelIds.push(options.addLabelIds[i]);
+            }
+            for (i = 0; i < options.removeLabelIds.length; i++) {
+              message.labelIds.splice(message.labelIds.indexOf(options.removeLabelIds[i]), 1);
+            }
+          });
+          if (this.messageCard) this.messageCard.card.hide();
+          this.messagesList.updateMessage(this.thread || this.messages[0]);
+          this.menu.hide();
+        }.bind(this), function(error) {
+          this.menu.hide();
+          new ErrorCard(this.account.name, error);
+        }.bind(this));
     }
   }.bind(this));
 
@@ -80,7 +93,7 @@ MailActionsList.prototype.updateMenu = function() {
   var categoryItems = [];
   var labelItems = [];
   this.labels.forEach(function(label) {
-    var hasLabel = this.message.labelIds.indexOf(label.id) !== -1;
+    var hasLabel = this.labelIds[label.id];
     if (label.type === 'system') {
       var match = /^CATEGORY_(.*)$/.exec(label.id);
       if (match) {

@@ -27,7 +27,7 @@ var AccountsList = function() {
 
   this.menu.on('select', function(e) {
     var messages = e.item.messages;
-    if (messages) {
+    if (messages && messages.length) {
       new MailMessagesList(this, e.item.account, e.item.title, messages);
     }
   }.bind(this));
@@ -58,19 +58,27 @@ AccountsList.prototype.refreshAccount = function(account) {
     account: account,
     messages: null
   });
-  Gmail.Messages.list(account, account.query || 'is:unread -is:mute',
+  (account.threaded ? Gmail.Threads.list : Gmail.Messages.list)
+    (account, account.query || 'is:unread -is:mute',
       this.updateAccount.bind(this), this.updateAccount.bind(this));
 };
 
 AccountsList.prototype.updateAccount = function(account, data, error) {
   var index = this.accounts.indexOf(account);
-  this.menu.item(0, index, {
+  var item = {
     title: account.name,
-    subtitle: data ? data.resultSizeEstimate + ' messages' : error,
-    icon: data ? null : 'images/warning.png',
     account: account,
-    messages: data && data.messages && data.messages.length ? data.messages : null
-  });
+  };
+  if (data) {
+    item.subtitle = data.resultSizeEstimate + (data.threads ? ' threads' : ' messages');
+    item.icon = null;
+    item.messages  = data.threads ? data.threads : data.messages;
+  } else {
+    item.subtitle = error;
+    item.icon = 'images/warning.png';
+    item.messages = null;
+  }
+  this.menu.item(0, index, item);
   account.refreshing = false;
 };
 

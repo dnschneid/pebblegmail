@@ -28,6 +28,57 @@ var Gmail = {
     }
   },
 
+  Threads: {
+    list: function(account, query, callback, errorCallback) {
+      GApi.getAccessToken(account, function(accessToken) {
+        var url = 'https://www.googleapis.com/gmail/v1/users/me/threads' +
+                  '?maxResults=20' +
+                  '&q=' + encodeURIComponent(query) +
+                  '&access_token=' + encodeURIComponent(accessToken);
+        ajax({
+          url: url,
+          type: 'json'
+        }, function(data) {
+          callback(account, data);
+        }, function(error) {
+          if (errorCallback) errorCallback(account, null, 'Could not get threads');
+        });
+      }, function(error) { errorCallback(account, null, error); });
+    },
+
+    get: function(account, threadId, callback, errorCallback) {
+      GApi.getAccessToken(account, function(accessToken) {
+        var url = 'https://www.googleapis.com/gmail/v1/users/me/threads/' +
+                  threadId +
+                  '?format=metadata' +
+                  '&access_token=' + encodeURIComponent(accessToken);
+        ajax({
+          url: url,
+          type: 'json'
+        }, callback, function(error) {
+          if (errorCallback) errorCallback('Could not get thread');
+        });
+      }, errorCallback);
+    },
+
+    modify: function(account, threadId, options, callback, errorCallback) {
+      GApi.getAccessToken(account, function(accessToken) {
+        var url = 'https://www.googleapis.com/gmail/v1/users/me/threads/' +
+          threadId + '/modify' +
+          '?access_token=' + encodeURIComponent(accessToken);
+
+        ajax({
+          url: url,
+          method: 'post',
+          type: 'json',
+          data: options
+        }, callback, function(error) {
+          if (errorCallback) errorCallback('Could not modify thread labels');
+        });
+      }, errorCallback);
+    }
+  },
+
   Messages: {
     list: function(account, query, callback, errorCallback) {
       GApi.getAccessToken(account, function(accessToken) {
@@ -72,7 +123,7 @@ var Gmail = {
           type: 'json',
           data: options
         }, callback, function(error) {
-          if (errorCallback) errorCallback('Could not modify labels');
+          if (errorCallback) errorCallback('Could not modify message labels');
         });
       }, errorCallback);
     }
