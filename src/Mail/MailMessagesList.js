@@ -1,6 +1,5 @@
 var UI = require('ui');
 var Util = require('Util');
-var ErrorCard = require('ErrorCard');
 var Gmail = require('Mail/Gmail');
 var MailMessageCard = require('MailMessageCard');
 var MailActionsList = require('MailActionsList');
@@ -12,7 +11,8 @@ var MailMessagesList = function(accountsList, account, title, messages) {
   var thread = null;
   if (!this.threaded && messages.messages) {
     thread = messages;
-    messages = messages.messages;
+    /* Threads return oldest-to-newest, but we want newest on top */
+    messages = Array.prototype.slice.call(messages.messages).reverse();
   }
   this.messages = messages;
   
@@ -76,18 +76,32 @@ MailMessagesList.prototype.updateMessage = function(message) {
   var index = this.messages.indexOf(message);
   var thread = message.messages || [message];
   var starred = false;
-  var unread = false;
+  var unread = 0;
   for (var i = 0; i < thread.length; i++) {
     starred = starred || thread[i].labelIds.indexOf(Gmail.STARRED_LABEL_ID) !== -1;
-    unread = unread || thread[i].labelIds.indexOf(Gmail.UNREAD_LABEL_ID) !== -1;
+    if (thread[i].labelIds.indexOf(Gmail.UNREAD_LABEL_ID) !== -1) {
+      unread += 1;
+    }
   }
   var state = (starred ? '*' : '') + (unread ? '' : '®');
-  /* TODO: decide what to put in subtitle for threads */
+  var subject = Util.trimLine(Util.getMessageSubjectHeader(thread[0]));
+  var from = Util.trimLine(Util.getMessageFromHeader(thread[0]));
+  var title;
+  var subtitle = state;
+  if (this.threaded) {
+    title = subject;
+    subtitle += unread ? unread + ' unread' : thread.length + ' messages';
+  } else if (this.account.threaded) {
+    title = Util.trimLine(Util.decodeHTML(thread[0].snippet));
+    subtitle += from;
+  } else {
+    title = subject;
+    subtitle += from;
+  }
+  
   this.menu.item(0, index, {
-    title: Util.trimLine(Util.getMessageSubjectHeader(thread[0])),
-    subtitle: state + Util.trimLine(Util.getMessageFromHeader(thread[0])),
-    message: message,
-    icon: null
+    title: title, subtitle: subtitle, icon: null,
+    message: message
   });
 };
 

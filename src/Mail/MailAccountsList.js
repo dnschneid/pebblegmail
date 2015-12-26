@@ -70,9 +70,9 @@ AccountsList.prototype.updateAccount = function(account, data, error) {
     account: account,
   };
   if (data) {
-    item.subtitle = data.resultSizeEstimate + (data.threads ? ' threads' : ' messages');
+    item.subtitle = data.resultSizeEstimate + (account.threaded ? ' conversations' : ' messages');
     item.icon = null;
-    item.messages  = data.threads ? data.threads : data.messages;
+    item.messages  = account.threaded ? data.threads : data.messages;
   } else {
     item.subtitle = error;
     item.icon = 'images/warning.png';
