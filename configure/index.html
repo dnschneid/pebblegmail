@@ -78,6 +78,10 @@
                      placeholder='is:unread !is:mute'>
             </div>
           </label>
+          <label class="item">
+            View as threads
+            <input type="checkbox" class="item-checkbox" id="threaded">
+          </label>
           <div class='item-container'>
             <div class='button-container'>
               <input type='button' class='item-button' id='remove' value='REMOVE'>
@@ -217,7 +221,8 @@
 
     add: function() {
       this.applyAccountOrder();
-      this.data.accounts.push({ 'name': 'New Account', 'key': '', 'query': '' });
+      this.data.accounts.push({ 'name': 'New Account', 'key': '', 'query': '',
+                                'threaded': false });
       this.updateAccountList();
       this.editAccount(this.data.accounts.length - 1);
     },
@@ -246,6 +251,7 @@
 
         document.getElementById('name').value = account.name;
         document.getElementById('query').value = account.query || '';
+        document.getElementById('threaded').checked = account.threaded || false;
 
         document.getElementById('accountData').style.display = '';
       } else {
@@ -263,6 +269,7 @@
       account.key = document.getElementById('key').value;
       account.name = document.getElementById('name').value;
       account.query = document.getElementById('query').value;
+      account.threaded = document.getElementById('threaded').checked;
 
       this.updateAccountList();
     },
@@ -299,6 +306,8 @@
   document.getElementById('name').addEventListener('input',
     ConfigurePage.updateAccount.bind(ConfigurePage));
   document.getElementById('query').addEventListener('input',
+    ConfigurePage.updateAccount.bind(ConfigurePage));
+  document.getElementById('threaded').addEventListener('input',
     ConfigurePage.updateAccount.bind(ConfigurePage));
   document.getElementById('signIn').addEventListener('click',
     ConfigurePage.signIn.bind(ConfigurePage));
