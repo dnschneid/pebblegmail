@@ -267,7 +267,7 @@
       this.applyAccountOrder();
       var account = this.data.accounts[this.activeAccount];
       account.key = document.getElementById('key').value;
-      account.name = document.getElementById('name').value;
+      account.name = document.getElementById('name').value || 'Unnamed';
       account.query = document.getElementById('query').value;
       account.threaded = document.getElementById('threaded').checked;
 
