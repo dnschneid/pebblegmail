@@ -31,33 +31,33 @@
             {
                 "file": "images/warning.png",
                 "name": "IMAGES_WARNING_PNG",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/uncheck.png",
                 "name": "IMAGES_UNCHECK_PNG",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/tile_splash.png",
                 "name": "IMAGES_TILE_SPLASH_PNG",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/refresh.png",
                 "name": "IMAGES_REFRESH_PNG",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/envelope.png",
                 "menuIcon": true,
                 "name": "IMAGES_ENVELOPE_PNG",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/check.png",
                 "name": "IMAGES_CHECK_PNG",
-                "type": "png"
+                "type": "bitmap"
             }
         ]
     },
