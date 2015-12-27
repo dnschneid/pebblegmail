@@ -42,10 +42,38 @@ var GApi = {
       this.onUpdate();
     }
   },
+  
+  /* Queues callbacks in case multiple requests are in parallel */
+  callbackQueue: {
+    queue: {},
+    
+    push: function(account, callback, errorCallback) {
+      this.queue[account.key] = this.queue[account.key] || [];
+      this.queue[account.key].push([callback, errorCallback]);
+      return this.queue[account.key].length > 1;
+    },
+    
+    doCallbacks: function(index, account, data) {
+      var callbacks = this.queue[account.key];
+      for (var i = 0; i < callbacks.length; i++) {
+        if (callbacks[i][index]) {
+          callbacks[i][index](data);
+        }
+      }
+      delete this.queue[account.key];
+    },
+    
+    callback: function(account, data) {
+      this.doCallbacks(0, account, data);
+    },
+    errorCallback: function(account, data) {
+      this.doCallbacks(1, account, data);
+    }
+  },
 
   getAccessToken: function(account, callback, errorCallback) {
     if (!account || !account.key) {
-      if (errorCallback) errorCallback('No account available');
+      if (errorCallback) errorCallback('Account configuration invalid');
       return;
     }
     var oauth = Settings.data(account.key);
@@ -57,6 +85,9 @@ var GApi = {
     if (now.valueOf() < expiry) {
       callback(oauth.access_token);
     } else {
+      if (GApi.callbackQueue.push(account, callback, errorCallback)) {
+        return;
+      }
       var request = { 'client_id': Settings.option('clientId'),
                       'client_secret': Settings.data('secret') };
       if (!oauth) {
@@ -80,12 +111,12 @@ var GApi = {
           }
           oauth.created = now.valueOf() / 1000;
           Settings.data(account.key, oauth);
-          callback(oauth.access_token);
+          GApi.callbackQueue.callback(account, oauth.access_token);
         } else {
-          if (errorCallback) errorCallback('Could not acquire access token');
+          GApi.callbackQueue.errorCallback(account, 'Could not acquire access token');
         }
       }, function(error) {
-        if (errorCallback) errorCallback('Could not request access token');
+        GApi.callbackQueue.errorCallback(account, 'Could not request access token');
       });
     }
   }
