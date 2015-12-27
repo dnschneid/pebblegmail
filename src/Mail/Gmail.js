@@ -3,11 +3,11 @@ var GApi = require('GApi');
 
 var Gmail = {
   Labels: {
-    listCache_: null,
+    listCache_: {},
 
     list: function(account, callback, errorCallback) {
-      if (this.listCache_) {
-        callback(this.listCache_);
+      if (this.listCache_[account.key]) {
+        callback(this.listCache_[account.key]);
         return;
       }
 
@@ -19,7 +19,7 @@ var Gmail = {
           url: url,
           type: 'json'
         }, function(data) {
-          this.listCache_ = data;
+          this.listCache_[account.key] = data;
           callback(data);
         }.bind(this), function(error) {
           if (errorCallback) errorCallback('Could not get labels list');
