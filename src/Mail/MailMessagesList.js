@@ -61,8 +61,14 @@ var MailMessagesList = function(accountsList, account, title, messages) {
 };
 
 MailMessagesList.prototype.loadMessage = function(message) {
+  if (message.loaded) {
+    return;
+  }
+  /* only load metadata if viewing threads or the message is known to be read */
+  var metadataOnly = this.threaded ||
+      (message.labelIds && message.labelIds.indexOf(Gmail.UNREAD_LABEL_ID) == -1);
   (this.threaded ? Gmail.Threads.get : Gmail.Messages.get)
-    (this.account, message.id, function(data) {
+    (!metadataOnly, this.account, message.id, function(data) {
       for (var field in data) {
         message[field] = data[field];
       }

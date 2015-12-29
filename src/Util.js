@@ -99,6 +99,9 @@ var Util = {
   getMessageBody: function(message) {
     var body = null;
     if ('payload' in message) {
+      if (!message.loaded) {
+        return Util.decodeHTML(message.snippet || '');
+      }
       body = Util.getMessageBody(message.payload);
       if (!body || !body.data) {
         return '';

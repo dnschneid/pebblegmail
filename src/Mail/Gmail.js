@@ -46,11 +46,13 @@ var Gmail = {
       }, function(error) { errorCallback(account, null, error); });
     },
 
-    get: function(account, threadId, callback, errorCallback) {
+    get: function(full, account, threadId, callback, errorCallback) {
+      /* Never load a full thread; that's crazy */
+      full = false;
       GApi.getAccessToken(account, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/threads/' +
                   threadId +
-                  '?format=metadata' +
+                  '?format=' + (full ? 'full' : 'metadata') +
                   '&access_token=' + encodeURIComponent(accessToken);
         ajax({
           url: url,
@@ -97,15 +99,19 @@ var Gmail = {
       }, function(error) { errorCallback(account, null, error); });
     },
 
-    get: function(account, messageId, callback, errorCallback) {
+    get: function(full, account, messageId, callback, errorCallback) {
       GApi.getAccessToken(account, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/messages/' +
                   messageId +
-                  '?access_token=' + encodeURIComponent(accessToken);
+                  '?format=' + (full ? 'full' : 'metadata') +
+                  '&access_token=' + encodeURIComponent(accessToken);
         ajax({
           url: url,
           type: 'json'
-        }, callback, function(error) {
+        }, function(data) {
+          data.loaded = full;
+          callback(data);
+        }, function(error) {
           if (errorCallback) errorCallback('Could not get message');
         });
       }, errorCallback);
