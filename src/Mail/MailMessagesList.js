@@ -4,7 +4,7 @@ var Gmail = require('Mail/Gmail');
 var MailMessageCard = require('MailMessageCard');
 var MailActionsList = require('MailActionsList');
 
-var MailMessagesList = function(accountsList, account, title, messages) {
+var MailMessagesList = function(accountsList, account, title, messages, nextPage) {
   this.threaded = accountsList.refreshAccount && account.threaded;
   this.account = account;
 
@@ -15,7 +15,7 @@ var MailMessagesList = function(accountsList, account, title, messages) {
     messages = Array.prototype.slice.call(messages.messages).reverse();
   }
   this.messages = messages;
-  
+
   if (!messages || !messages.length) {
     return;
   }
@@ -33,12 +33,36 @@ var MailMessagesList = function(accountsList, account, title, messages) {
     }]
   });
 
+  if (nextPage) {
+    this.menu.item(0, messages.length, {
+      title: '',
+      subtitle: 'Load more',
+      nextPage: nextPage,
+      icon: ''
+    });
+  }
+
   this.menu.on('select', function(e) {
     var message = e.item.message;
     if (message && message.messages) {
       this.child = new MailMessagesList(this, account, e.item.title, message);
     } else if (message) {
       this.child = new MailMessageCard(account, message, this);
+    } else if (e.item.nextPage) {
+      var nextPage = e.item.nextPage;
+      this.menu.item(e.sectionIndex, e.itemIndex, {
+        title: 'Loading more...',
+        subtitle: '',
+        nextPage: null,
+        icon: 'images/refresh.png'
+      });
+      nextPage(this.addMessages.bind(this), function(a,d,e) {
+        this.menu.item(e.sectionIndex, e.itemIndex, {
+          title: 'Error loading more',
+          subtitle: e,
+          icon: 'images/warning.png'
+        });
+      });
     }
   }.bind(this));
 
@@ -67,6 +91,28 @@ MailMessagesList.prototype.hide = function() {
   if (this.child) {
     this.child.hide();
     this.child = null;
+  }
+};
+
+MailMessagesList.prototype.addMessages = function(account, data) {
+  var newMessages = data.threads || data.messages;
+  for (var i = 0; i < newMessages.length; i++) {
+    this.menu.item(0, this.messages.length, {
+      title: 'Loading...',
+      subtitle: '(' + newMessages[i].id + ')',
+      message: null,
+      icon: 'images/refresh.png'
+    });
+    this.messages.push(newMessages[i]);
+    this.loadMessage(newMessages[i]);
+  }
+  if (data.nextPage) {
+    this.menu.item(0, this.messages.length, {
+      title: '',
+      subtitle: 'Load more',
+      nextPage: data.nextPage,
+      icon: ''
+    });
   }
 };
 

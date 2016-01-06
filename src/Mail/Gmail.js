@@ -29,16 +29,23 @@ var Gmail = {
   },
 
   Threads: {
-    list: function(account, query, callback, errorCallback) {
+    list: function(account, query, callback, errorCallback, pageToken) {
       GApi.getAccessToken(account, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/threads' +
                   '?maxResults=20' +
+                  '&pageToken=' + (pageToken || '') +
                   '&q=' + encodeURIComponent(query) +
                   '&access_token=' + encodeURIComponent(accessToken);
         ajax({
           url: url,
           type: 'json'
         }, function(data) {
+          if (data.nextPageToken) {
+            data.nextPage = function(callback, errorCallback) {
+              Gmail.Threads.list(account, query, callback, errorCallback,
+                                 data.nextPageToken);
+            };
+          }
           callback(account, data);
         }, function(error) {
           if (errorCallback) errorCallback(account, null, 'Could not get threads');
@@ -82,16 +89,23 @@ var Gmail = {
   },
 
   Messages: {
-    list: function(account, query, callback, errorCallback) {
+    list: function(account, query, callback, errorCallback, pageToken) {
       GApi.getAccessToken(account, function(accessToken) {
         var url = 'https://www.googleapis.com/gmail/v1/users/me/messages' +
                   '?maxResults=20' +
+                  '&pageToken=' + (pageToken || '') +
                   '&q=' + encodeURIComponent(query) +
                   '&access_token=' + encodeURIComponent(accessToken);
         ajax({
           url: url,
           type: 'json'
         }, function(data) {
+          if (data.nextPageToken) {
+            data.nextPage = function(callback, errorCallback) {
+              Gmail.Messages.list(account, query, callback, errorCallback,
+                                  data.nextPageToken);
+            };
+          }
           callback(account, data);
         }, function(error) {
           if (errorCallback) errorCallback(account, null, 'Could not get messages');

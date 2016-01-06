@@ -29,7 +29,8 @@ var MailAccountsList = function() {
   this.menu.on('select', function(e) {
     var messages = e.item.messages;
     if (messages && messages.length) {
-      this.child = new MailMessagesList(this, e.item.account, e.item.title, messages);
+      this.child = new MailMessagesList(this, e.item.account, e.item.title,
+                                        messages, e.item.nextPage);
     }
   }.bind(this));
 
@@ -65,7 +66,8 @@ MailAccountsList.prototype.refreshAccount = function(account) {
     subtitle: 'Loading...',
     icon: 'images/refresh.png',
     account: account,
-    messages: null
+    messages: null,
+    nextPage: null
   });
   (account.threaded ? Gmail.Threads.list : Gmail.Messages.list)
     (account, account.query || 'is:unread -is:mute',
@@ -83,11 +85,13 @@ MailAccountsList.prototype.updateAccount = function(account, data, error) {
                     (account.threaded ? ' conversation' : ' message') +
                     Util.plural(data.resultSizeEstimate);
     item.icon = null;
-    item.messages  = account.threaded ? data.threads : data.messages;
+    item.messages = account.threaded ? data.threads : data.messages;
+    item.nextPage = data.nextPage;
   } else {
     item.subtitle = error;
     item.icon = 'images/warning.png';
     item.messages = null;
+    item.nextPage = null;
   }
   this.menu.item(0, index, item);
   account.refreshing = false;
