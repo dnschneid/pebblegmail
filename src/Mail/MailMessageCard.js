@@ -14,11 +14,11 @@ var MailMessageCard = function(account, message, messagesList) {
   this.updateMessage();
 
   this.card.on('click', 'select', function() {
-    new MailActionsList(account, message, messagesList, this);
+    this.child = new MailActionsList(account, message, messagesList, this);
   }.bind(this));
 
   this.card.on('longClick', 'select', function() {
-    new MailActionsList(account, message, messagesList, this);
+    this.child = new MailActionsList(account, message, messagesList, this);
   }.bind(this));
   
   if (!message.loaded) {
@@ -32,6 +32,14 @@ var MailMessageCard = function(account, message, messagesList) {
   }
 
   this.card.show();
+};
+
+MailMessageCard.prototype.hide = function() {
+  this.card.hide();
+  if (this.child) {
+    this.child.hide();
+    this.child = null;
+  }
 };
 
 MailMessageCard.prototype.updateMessage = function() {

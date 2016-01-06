@@ -3,7 +3,7 @@ var UI = require('ui');
 var Gmail = require('Gmail');
 var MailMessagesList = require('MailMessagesList');
 
-var AccountsList = function() {
+var MailAccountsList = function() {
   this.accounts = Settings.option('accounts');
   if (!this.accounts) {
     this.menu = new UI.Menu({
@@ -28,7 +28,7 @@ var AccountsList = function() {
   this.menu.on('select', function(e) {
     var messages = e.item.messages;
     if (messages && messages.length) {
-      new MailMessagesList(this, e.item.account, e.item.title, messages);
+      this.child = new MailMessagesList(this, e.item.account, e.item.title, messages);
     }
   }.bind(this));
 
@@ -45,7 +45,15 @@ var AccountsList = function() {
   this.menu.show();
 };
 
-AccountsList.prototype.refreshAccount = function(account) {
+MailAccountsList.prototype.hide = function() {
+  this.menu.hide();
+  if (this.child) {
+    this.child.hide();
+    this.child = null;
+  }
+};
+
+MailAccountsList.prototype.refreshAccount = function(account) {
   if (account.refreshing) {
     return;
   }
@@ -63,7 +71,7 @@ AccountsList.prototype.refreshAccount = function(account) {
       this.updateAccount.bind(this), this.updateAccount.bind(this));
 };
 
-AccountsList.prototype.updateAccount = function(account, data, error) {
+MailAccountsList.prototype.updateAccount = function(account, data, error) {
   var index = this.accounts.indexOf(account);
   var item = {
     title: account.name,
@@ -84,4 +92,4 @@ AccountsList.prototype.updateAccount = function(account, data, error) {
   account.refreshing = false;
 };
 
-module.exports = AccountsList;
+module.exports = MailAccountsList;

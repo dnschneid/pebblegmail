@@ -37,10 +37,6 @@ var GApi = {
 
     /* Save the data */
     Settings.data(data);
-
-    if (this.onUpdate) {
-      this.onUpdate();
-    }
   },
   
   /* Queues callbacks in case multiple requests are in parallel */

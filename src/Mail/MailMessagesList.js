@@ -36,15 +36,17 @@ var MailMessagesList = function(accountsList, account, title, messages) {
   this.menu.on('select', function(e) {
     var message = e.item.message;
     if (message && message.messages) {
-      new MailMessagesList(this, account, e.item.title, message);
+      this.child = new MailMessagesList(this, account, e.item.title, message);
     } else if (message) {
-      new MailMessageCard(account, message, this);
+      this.child = new MailMessageCard(account, message, this);
     }
   }.bind(this));
 
   this.menu.on('longSelect', function(e) {
     var message = e.item.message;
-    if (message) new MailActionsList(account, message, this);
+    if (message) {
+      this.child = new MailActionsList(account, message, this);
+    }
   }.bind(this));
 
   this.menu.on('hide', function() {
@@ -58,6 +60,14 @@ var MailMessagesList = function(accountsList, account, title, messages) {
   this.menu.show();
 
   messages.map(this.loadMessage.bind(this));
+};
+
+MailMessagesList.prototype.hide = function() {
+  this.menu.hide();
+  if (this.child) {
+    this.child.hide();
+    this.child = null;
+  }
 };
 
 MailMessagesList.prototype.loadMessage = function(message) {

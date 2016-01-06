@@ -20,4 +20,8 @@ var ErrorCard = function(subtitle, body) {
   this.card.show();
 };
 
+ErrorCard.prototype.hide = function() {
+  this.card.hide();
+};
+
 module.exports = ErrorCard;

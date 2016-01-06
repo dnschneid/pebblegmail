@@ -21,9 +21,17 @@ var MailActionsList = function(account, message, messagesList, messageCard) {
     this.labels = data.labels || [];
     this.updateMenu();
   }.bind(this), function(error) {
+    this.child = new ErrorCard(this.account.name, error);
     this.menu.hide();
-    new ErrorCard(this.account.name, error);
   }.bind(this));
+};
+
+MailActionsList.prototype.hide = function() {
+  this.menu.hide();
+  if (this.child) {
+    this.child.hide();
+    this.child = null;
+  }
 };
 
 MailActionsList.prototype.createMenu = function() {
@@ -79,8 +87,7 @@ MailActionsList.prototype.createMenu = function() {
           this.messagesList.updateMessage(this.thread || this.messages[0]);
           this.menu.hide();
         }.bind(this), function(error) {
-          this.menu.hide();
-          new ErrorCard(this.account.name, error);
+          this.child = new ErrorCard(this.account.name, error);
         }.bind(this));
     }
   }.bind(this));
