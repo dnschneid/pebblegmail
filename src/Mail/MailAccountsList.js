@@ -70,7 +70,9 @@ AccountsList.prototype.updateAccount = function(account, data, error) {
     account: account,
   };
   if (data) {
-    item.subtitle = data.resultSizeEstimate + (account.threaded ? ' conversations' : ' messages');
+    item.subtitle = data.resultSizeEstimate +
+                    (account.threaded ? ' conversation' : ' message') +
+                    Util.plural(data.resultSizeEstimate);
     item.icon = null;
     item.messages  = account.threaded ? data.threads : data.messages;
   } else {

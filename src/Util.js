@@ -142,6 +142,10 @@ var Util = {
     return '';
   },
 
+  plural: function(number, text) {
+    return number != 1 ? (text || 's') : '';
+  },
+
   systemLabelSortComparator: function(a, b) {
     var priorities = {
       UNREAD: 1,

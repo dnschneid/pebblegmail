@@ -95,7 +95,7 @@ MailMessagesList.prototype.updateMessage = function(message) {
     if (unread) {
       subtitle += unread + ' unread, ';
     }
-    subtitle += thread.length + ' messages';
+    subtitle += thread.length + ' message' + Util.plural(thread.length);
   } else {
     var from = Util.trimLine(Util.getMessageFromHeader(thread[0]));
     subtitle += (unread ? '' : '®') + from;
@@ -103,7 +103,7 @@ MailMessagesList.prototype.updateMessage = function(message) {
       title = Util.trimLine(Util.decodeHTML(thread[0].snippet));
     }
   }
-  
+
   this.menu.item(0, index, {
     title: title, subtitle: subtitle, icon: null,
     message: message
