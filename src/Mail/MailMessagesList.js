@@ -89,20 +89,19 @@ MailMessagesList.prototype.updateMessage = function(message) {
       unread += 1;
     }
   }
-  var state = (starred ? '*' : '') + (unread ? '' : '®');
-  var subject = Util.trimLine(Util.getMessageSubjectHeader(thread[0]));
-  var from = Util.trimLine(Util.getMessageFromHeader(thread[0]));
-  var title;
-  var subtitle = state;
+  var title = Util.trimLine(Util.getMessageSubjectHeader(thread[0]));
+  var subtitle = starred ? '*' : '';
   if (this.threaded) {
-    title = subject;
-    subtitle += unread ? unread + ' unread' : thread.length + ' messages';
-  } else if (this.account.threaded) {
-    title = Util.trimLine(Util.decodeHTML(thread[0].snippet));
-    subtitle += from;
+    if (unread) {
+      subtitle += unread + ' unread, ';
+    }
+    subtitle += thread.length + ' messages';
   } else {
-    title = subject;
-    subtitle += from;
+    var from = Util.trimLine(Util.getMessageFromHeader(thread[0]));
+    subtitle += (unread ? '' : '®') + from;
+    if (this.account.threaded) {
+      title = Util.trimLine(Util.decodeHTML(thread[0].snippet));
+    }
   }
   
   this.menu.item(0, index, {
