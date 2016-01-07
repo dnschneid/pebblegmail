@@ -2,13 +2,14 @@ var Settings = require('settings');
 var MailAccountsList = require('Mail/MailAccountsList');
 var GApi = require('GApi');
 
-function() {
+(function() {
   var menu = null;
   var resetUI = function() {
+    var newMenu = new MailAccountsList();
     if (menu) {
       menu.hide();
     }
-    menu = new MailAccountsList();
+    menu = newMenu;
   };
 
   Settings.config({
@@ -21,4 +22,4 @@ function() {
   });
 
   resetUI();
-}();
+})();
