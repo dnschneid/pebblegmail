@@ -72,6 +72,7 @@ MailMessagesList.prototype.hide = function() {
 
 MailMessagesList.prototype.loadMessage = function(message) {
   if (message.loaded) {
+    this.updateMessage(message);
     return;
   }
   /* only load metadata if viewing threads or the message is known to be read */
