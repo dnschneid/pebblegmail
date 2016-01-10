@@ -4,7 +4,7 @@
         "configurable"
     ],
     "companyName": "David Schneider",
-    "longName": "Gmail",
+    "longName": "Email for Pebble",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -62,14 +62,14 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "Gmail",
+    "shortName": "Email",
     "targetPlatforms": [
         "aplite",
         "basalt"
     ],
     "uuid": "1b3e723b-0475-41fd-bab4-fa5b15da2a4f",
     "versionCode": 1,
-    "versionLabel": "0.1",
+    "versionLabel": "0.7",
     "watchapp": {
         "hiddenApp": false,
         "watchface": false

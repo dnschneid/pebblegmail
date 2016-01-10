@@ -21,7 +21,7 @@ var MailAccountsList = function() {
   this.menu = new UI.Menu({
     highlightBackgroundColor: Gmail.COLOR,
     sections: [{
-      title: 'Gmail',
+      title: 'Email',
       items: {}
     }]
   });
