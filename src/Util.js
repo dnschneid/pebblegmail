@@ -106,7 +106,8 @@ var Util = {
       if (!body || !body.data) {
         return '';
       }
-      body.data = Util.decode64(body.data, 1024);
+      var limit = Pebble.getActiveWatchInfo().platform == 'aplite' ? 768 : 0;
+      body.data = Util.decode64(body.data, limit);
       return body.html ? Util.decodeHTML(body.data) : body.data;
     } else if (message.mimeType.substring(0, 4) == 'text' && message.body.data) {
       return { html: message.mimeType.slice(-4) == 'html', data: message.body.data };
