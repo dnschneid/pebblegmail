@@ -91,7 +91,8 @@ var Util = {
 
     } while (i < maxlength);
 
-    return output;
+    /* Make the string proper UTF-8 */
+    return decodeURIComponent(escape(output));
   },
 
   /* Recursively grabs the first text part of multipart messages
