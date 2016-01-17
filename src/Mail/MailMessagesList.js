@@ -111,7 +111,7 @@ MailMessagesList.prototype.updateMessage = function(message) {
     var from = Util.trimLine(Util.getMessageFromHeader(thread[0]));
     subtitle += (unread ? '' : '®') + from;
     if (this.account.threaded) {
-      title = Util.trimLine(Util.decodeHTML(thread[0].snippet));
+      title = Util.trimLine(Util.decodeHTMLEntities(thread[0].snippet));
     }
   }
 
