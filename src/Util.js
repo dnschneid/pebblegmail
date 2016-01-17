@@ -141,14 +141,22 @@ var Util = {
       if (!message.loaded) {
         return Util.decodeHTMLEntities(message.snippet);
       }
-      body = Util.getMessageBody(message.payload);
-      if (!body || !body.data) {
-        return '';
+      if (message.payload.mimeType == 'pebble') {
+        body = message.payload.data;
+      } else {
+        body = Util.getMessageBody(message.payload);
+        if (!body || !body.data) {
+          return '';
+        }
+        body.data = Util.decode64(body.data);
+        body = body.html ? Util.decodeHTML(body.data) : body.data;
+        /* Ditch the rest of the payload data and store the result */
+        message.payload.mimeType = 'pebble';
+        message.payload.data = body;
+        message.payload.parts = [];
       }
       var limit = Pebble.getActiveWatchInfo().platform == 'aplite' ? 768 : 0;
-      body.data = Util.decode64(body.data, body.html ? 0 : limit);
-      body.data = body.html ? Util.decodeHTML(body.data) : body.data;
-      return body.html && limit ? body.data.substring(0, limit) : body.data;
+      return limit ? body.substring(0, limit) : body;
     } else if (message.mimeType.substring(0, 4) == 'text' && message.body.data) {
       return { html: message.mimeType.slice(-4) == 'html', data: message.body.data };
     } else if (message.mimeType.substring(0, 9) == 'multipart') {
