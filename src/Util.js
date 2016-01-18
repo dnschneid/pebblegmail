@@ -1,3 +1,5 @@
+var Platform = require('platform');
+
 var Util = {
   // '19:00'
   formatTime: function(date) {
@@ -155,7 +157,7 @@ var Util = {
         message.payload.data = body;
         message.payload.parts = [];
       }
-      var limit = Pebble.getActiveWatchInfo().platform == 'aplite' ? 768 : 0;
+      var limit = Platform.version() === 'aplite' ? 768 : 0;
       return limit ? body.substring(0, limit) : body;
     } else if (message.mimeType.substring(0, 4) == 'text' && message.body.data) {
       return { html: message.mimeType.slice(-4) == 'html', data: message.body.data };
