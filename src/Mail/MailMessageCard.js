@@ -1,7 +1,7 @@
 var Gmail = require('Gmail');
 var UI = require('ui');
 var Util = require('Util');
-var MailActionsList = require('MailActionsList');
+var MailLabelsList = require('MailLabelsList');
 
 var MailMessageCard = function(account, message, messagesList) {
   this.message = message;
@@ -14,11 +14,11 @@ var MailMessageCard = function(account, message, messagesList) {
   this.updateMessage();
 
   this.card.on('click', 'select', function() {
-    this.child = new MailActionsList(account, message, messagesList, this);
+    this.child = new MailLabelsList(account, message, messagesList, this);
   }.bind(this));
 
   this.card.on('longClick', 'select', function() {
-    this.child = new MailActionsList(account, message, messagesList, this);
+    this.child = new MailLabelsList(account, message, messagesList, this);
   }.bind(this));
   
   if (!message.loaded) {

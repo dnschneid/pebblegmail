@@ -3,7 +3,7 @@ var Util = require('Util');
 var Gmail = require('Gmail');
 var ErrorCard = require('ErrorCard');
 
-var MailActionsList = function(account, message, messagesList, messageCard) {
+var MailLabelsList = function(account, message, messagesList, messageCard) {
   this.account = account;
   this.thread = message.messages ? message : null;
   this.messages = message.messages || [message];
@@ -26,7 +26,7 @@ var MailActionsList = function(account, message, messagesList, messageCard) {
   }.bind(this));
 };
 
-MailActionsList.prototype.hide = function() {
+MailLabelsList.prototype.hide = function() {
   this.menu.hide();
   if (this.child) {
     this.child.hide();
@@ -34,7 +34,7 @@ MailActionsList.prototype.hide = function() {
   }
 };
 
-MailActionsList.prototype.createMenu = function() {
+MailLabelsList.prototype.createMenu = function() {
   var subject = Util.getMessageSubjectHeader(this.messages[0]);
   this.menu = new UI.Menu({
     highlightBackgroundColor: Gmail.COLOR,
@@ -95,7 +95,7 @@ MailActionsList.prototype.createMenu = function() {
   this.menu.show();
 };
 
-MailActionsList.prototype.updateMenu = function() {
+MailLabelsList.prototype.updateMenu = function() {
   var systemItems = [];
   var categoryItems = [];
   var labelItems = [];
@@ -137,7 +137,7 @@ MailActionsList.prototype.updateMenu = function() {
   });
 };
 
-MailActionsList.prototype.canModifyLabel = function(label) {
+MailLabelsList.prototype.canModifyLabel = function(label) {
   var unmodifiableLabels = {
     DRAFT: true,
     SENT: true,
@@ -146,4 +146,4 @@ MailActionsList.prototype.canModifyLabel = function(label) {
   return !unmodifiableLabels[label.id];
 };
 
-module.exports = MailActionsList;
+module.exports = MailLabelsList;

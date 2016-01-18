@@ -2,7 +2,7 @@ var UI = require('ui');
 var Util = require('Util');
 var Gmail = require('Mail/Gmail');
 var MailMessageCard = require('MailMessageCard');
-var MailActionsList = require('MailActionsList');
+var MailLabelsList = require('MailLabelsList');
 
 var MailMessagesList = function(accountsList, account, title, messages) {
   this.threaded = accountsList.refreshAccount && account.threaded;
@@ -45,7 +45,7 @@ var MailMessagesList = function(accountsList, account, title, messages) {
   this.menu.on('longSelect', function(e) {
     var message = e.item.message;
     if (message) {
-      this.child = new MailActionsList(account, message, this);
+      this.child = new MailLabelsList(account, message, this);
     }
   }.bind(this));
 
