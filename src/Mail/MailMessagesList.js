@@ -38,14 +38,14 @@ var MailMessagesList = function(accountsList, account, title, messages) {
     if (message && message.messages) {
       this.child = new MailMessagesList(this, account, e.item.title, message);
     } else if (message) {
-      this.child = new MailMessageCard(account, message, this);
+      this.child = new MailMessageCard(this, account, message);
     }
   }.bind(this));
 
   this.menu.on('longSelect', function(e) {
     var message = e.item.message;
     if (message) {
-      this.child = new MailLabelsList(account, message, this);
+      this.child = new MailLabelsList(this, account, message);
     }
   }.bind(this));
 
@@ -119,6 +119,10 @@ MailMessagesList.prototype.updateMessage = function(message) {
     title: title, subtitle: subtitle, icon: null,
     message: message
   });
+};
+
+MailMessagesList.prototype.labelsChanged = function(message) {
+  this.updateMessage(message);
 };
 
 MailMessagesList.prototype.setMessageError = function(message, error) {

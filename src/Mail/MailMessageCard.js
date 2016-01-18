@@ -3,7 +3,8 @@ var UI = require('ui');
 var Util = require('Util');
 var MailLabelsList = require('MailLabelsList');
 
-var MailMessageCard = function(account, message, messagesList) {
+var MailMessageCard = function(parent, account, message) {
+  this.parent = parent;
   this.message = message;
   this.card = new UI.Card({
     subtitle: Util.getMessageSubjectHeader(message),
@@ -14,11 +15,11 @@ var MailMessageCard = function(account, message, messagesList) {
   this.updateMessage();
 
   this.card.on('click', 'select', function() {
-    this.child = new MailLabelsList(account, message, messagesList, this);
+    this.child = new MailLabelsList(this, account, message);
   }.bind(this));
 
   this.card.on('longClick', 'select', function() {
-    this.child = new MailLabelsList(account, message, messagesList, this);
+    this.child = new MailLabelsList(this, account, message);
   }.bind(this));
   
   if (!message.loaded) {
@@ -48,6 +49,11 @@ MailMessageCard.prototype.updateMessage = function() {
     Util.getMessageDateTime(this.message) + '\n\n' +
     Util.getMessageBody(this.message)
   );
+};
+
+MailMessageCard.prototype.labelsChanged = function(message) {
+  this.parent.labelsChanged(message);
+  this.hide();
 };
 
 module.exports = MailMessageCard;

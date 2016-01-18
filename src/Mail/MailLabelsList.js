@@ -3,12 +3,11 @@ var Util = require('Util');
 var Gmail = require('Gmail');
 var ErrorCard = require('ErrorCard');
 
-var MailLabelsList = function(account, message, messagesList, messageCard) {
+var MailLabelsList = function(parent, account, message) {
   this.account = account;
   this.thread = message.messages ? message : null;
   this.messages = message.messages || [message];
-  this.messagesList = messagesList;
-  this.messageCard = messageCard;
+  this.parent = parent;
   this.labelIds = {};
   this.messages.forEach(function (message) {
     for (var i = 0; i < message.labelIds.length; i++) {
@@ -83,8 +82,8 @@ MailLabelsList.prototype.createMenu = function() {
               message.labelIds.splice(message.labelIds.indexOf(options.removeLabelIds[i]), 1);
             }
           });
-          if (this.messageCard) this.messageCard.card.hide();
-          this.messagesList.updateMessage(this.thread || this.messages[0]);
+           
+          this.parent.labelsChanged(this.thread || this.messages[0]);
           this.menu.hide();
         }.bind(this), function(error) {
           this.child = new ErrorCard(this.account.name, error);
