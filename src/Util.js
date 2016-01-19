@@ -1,5 +1,3 @@
-var Platform = require('platform');
-
 var Util = {
   // '19:00'
   formatTime: function(date) {
@@ -137,7 +135,7 @@ var Util = {
 
   /* Recursively grabs the first text part of multipart messages
    * Prefers plaintext over html. */
-  getMessageBody: function(message) {
+  getMessageBody: function(message, page) {
     var body = null;
     if ('payload' in message) {
       if (!message.loaded) {
@@ -157,8 +155,11 @@ var Util = {
         message.payload.data = body;
         message.payload.parts = [];
       }
-      var limit = Platform.version() === 'aplite' ? 768 : 0;
-      return limit ? body.substring(0, limit) : body;
+      page = page || 0;
+      if (page < 0) {
+        return body;
+      }
+      return body.substring(page * Util.PAGE_SIZE, (page + 1) * Util.PAGE_SIZE);
     } else if (message.mimeType.substring(0, 4) == 'text' && message.body.data) {
       return { html: message.mimeType.slice(-4) == 'html', data: message.body.data };
     } else if (message.mimeType.substring(0, 9) == 'multipart') {
@@ -172,6 +173,16 @@ var Util = {
       }
     }
     return body;
+  },
+  
+  /* Returns the number of pages as a result of a getMessageBody.
+   * Returns -1 if the body isn't loaded (snippet only) */
+  getMessageBodyPageCount: function(message) {
+    if (!message.loaded) {
+      return -1;
+    } else {
+      return Math.ceil(Util.getMessageBody(message, -1).length / Util.PAGE_SIZE);
+    }
   },
 
   getFriendlyLabelName: function(label) {
@@ -207,7 +218,9 @@ var Util = {
       TRASH: 6
     };
     return (priorities[a.label.id] || 9) - (priorities[b.label.id] || 9);
-  }
+  },
+  
+  PAGE_SIZE: 800
 };
 
 module.exports = Util;

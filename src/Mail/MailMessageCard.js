@@ -3,12 +3,13 @@ var UI = require('ui');
 var Util = require('Util');
 var MailLabelsList = require('MailLabelsList');
 
-var MailMessageCard = function(parent, account, message) {
+var MailMessageCard = function(parent, account, message, page) {
   this.parent = parent;
   this.message = message;
+  this.page = page || 0;
   this.card = new UI.Card({
     subtitle: Util.getMessageSubjectHeader(message),
-    body: '',
+    body: 'Loading...',
     scrollable: true,
     style: 'small'
   });
@@ -19,7 +20,9 @@ var MailMessageCard = function(parent, account, message) {
   }.bind(this));
 
   this.card.on('longClick', 'select', function() {
-    this.child = new MailLabelsList(this, account, message);
+    if (this.page + 1 < Util.getMessageBodyPageCount(message)) {
+      this.child = new MailMessageCard(this, account, message, this.page + 1);
+    }
   }.bind(this));
   
   if (!message.loaded) {
@@ -44,11 +47,21 @@ MailMessageCard.prototype.hide = function() {
 };
 
 MailMessageCard.prototype.updateMessage = function() {
-  this.card.body(
-    Util.getMessageFromHeader(this.message) + '\n' +
-    Util.getMessageDateTime(this.message) + '\n\n' +
-    Util.getMessageBody(this.message)
-  );
+  var pages = Util.getMessageBodyPageCount(this.message);
+  if (pages < 0) {
+    pages = '(Snippet)\n';
+  } else if (pages > 1) {
+    pages = '(Page ' + (this.page + 1) + ' of ' + pages + ')\n';
+  } else {
+    pages = '';
+  }
+  var body = '';
+  if (this.page === 0) {
+    body = Util.getMessageFromHeader(this.message) + '\n' +
+           Util.getMessageDateTime(this.message) + '\n';
+  }
+  this.card.body(body +  pages + '\n' +
+                 Util.getMessageBody(this.message, this.page));
 };
 
 MailMessageCard.prototype.labelsChanged = function(message) {
