@@ -132,6 +132,11 @@ var Util = {
     /* Make the string proper UTF-8 */
     return decodeURIComponent(escape(output));
   },
+  
+  getMessageSnippet: function(message) {
+    var snippet = Util.decodeHTMLEntities(message.snippet);
+    return snippet.length ? snippet : '(No content)';
+  },
 
   /* Recursively grabs the first text part of multipart messages
    * Prefers plaintext over html. */
@@ -139,9 +144,8 @@ var Util = {
     var body = null;
     if ('payload' in message) {
       if (!message.loaded) {
-        return Util.decodeHTMLEntities(message.snippet);
-      }
-      if (message.payload.mimeType == 'pebble') {
+        body = Util.getMessageSnippet(message);
+      } else if (message.payload.mimeType == 'pebble') {
         body = message.payload.data;
       } else {
         body = Util.getMessageBody(message.payload);
@@ -150,6 +154,9 @@ var Util = {
         }
         body.data = Util.decode64(body.data);
         body = body.html ? Util.decodeHTML(body.data) : body.data;
+        if (!body.length) {
+          body = '(No content)';
+        }
         /* Ditch the rest of the payload data and store the result */
         message.payload.mimeType = 'pebble';
         message.payload.data = body;
