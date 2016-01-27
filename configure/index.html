@@ -57,12 +57,15 @@
         </div>
         <div class='item-container-content' id='accountData' style='display: none'>
           <label class='item'>
-            <div class='item-input-wrapper item-input-wrapper-button'>
+            <div class='item-input-wrapper item-input-wrapper-button'
+                 style='position: relative; left: 23%'>
               <input type='text' class='item-input' id='key'
                      placeholder='Auth key (1/xyz)'>
             </div>
             <input type='button' class='item-button item-input-button'
-                   id='signIn' value='GET KEY'>
+                   style='left: 10px' id='signIn' value='GET KEY'>
+            <input type='button' class='item-button item-input-button'
+                   style='left: 10px' id='copy' value='COPY KEY'>
           </label>
           <label class='item'>
             Name
@@ -219,6 +222,12 @@
           + "&redirect_uri=" + "urn:ietf:wg:oauth:2.0:oob";
     },
 
+    copyAuth: function() {
+      var key = document.getElementById('key');
+      key.select();
+      document.execCommand("Copy");
+    },
+
     add: function() {
       this.applyAccountOrder();
       this.data.accounts.push({ 'name': 'New Account', 'key': '', 'query': '',
@@ -243,9 +252,11 @@
         key.value = account.key || '';
         if (account.key.length > 5) {
           document.getElementById('signIn').style.display = 'none';
+          document.getElementById('copy').style.display = '';
           key.readOnly = true;
         } else {
           document.getElementById('signIn').style.display = '';
+          document.getElementById('copy').style.display = 'none';
           key.readOnly = false;
         }
 
@@ -311,6 +322,8 @@
     ConfigurePage.updateAccount.bind(ConfigurePage));
   document.getElementById('signIn').addEventListener('click',
     ConfigurePage.signIn.bind(ConfigurePage));
+  document.getElementById('copy').addEventListener('click',
+    ConfigurePage.copyAuth.bind(ConfigurePage));
   document.getElementById('add').addEventListener('click',
     ConfigurePage.add.bind(ConfigurePage));
   document.getElementById('remove').addEventListener('click',
