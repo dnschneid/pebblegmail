@@ -250,7 +250,7 @@
 
         var key = document.getElementById('key');
         key.value = account.key || '';
-        if (account.key.length > 5) {
+        if (/\d\/\S{22,}/.test(account.key)) {
           document.getElementById('signIn').style.display = 'none';
           document.getElementById('copy').style.display = '';
           key.readOnly = true;
