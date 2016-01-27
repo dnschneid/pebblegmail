@@ -139,7 +139,7 @@
         for (var key in unsaved) {
           this.data[key] = unsaved[key];
         }
-        localStorage.clear();
+        localStorage.removeItem('unsaved');
       }
 
       if (this.data.clientId && this.secretIsValid()) {
