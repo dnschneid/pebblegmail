@@ -34,7 +34,6 @@ var GApi = {
         Settings.option('secret', 'y');
       }
     }
-
     /* Save the data */
     Settings.data(data);
   },
