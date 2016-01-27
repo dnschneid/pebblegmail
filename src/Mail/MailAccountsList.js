@@ -40,6 +40,7 @@ var MailAccountsList = function() {
   }.bind(this));
 
   for (var i = 0; i < this.accounts.length; i++) {
+    this.accounts[i].refreshing = false;
     this.refreshAccount(this.accounts[i]);
   }
 
