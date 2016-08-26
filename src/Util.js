@@ -227,7 +227,7 @@ var Util = {
     return (priorities[a.label.id] || 9) - (priorities[b.label.id] || 9);
   },
   
-  PAGE_SIZE: 800
+  PAGE_SIZE: 350
 };
 
 module.exports = Util;

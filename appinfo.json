@@ -65,11 +65,12 @@
     "shortName": "Email",
     "targetPlatforms": [
         "aplite",
-        "basalt"
+        "basalt",
+        "chalk"
     ],
     "uuid": "1b3e723b-0475-41fd-bab4-fa5b15da2a4f",
     "versionCode": 1,
-    "versionLabel": "1.00",
+    "versionLabel": "1.1",
     "watchapp": {
         "hiddenApp": false,
         "watchface": false
