@@ -216,13 +216,16 @@
 
     signIn: function() {
       this.collectData();
-      window.open(
-        "https://accounts.google.com/o/oauth2/auth"
+      var url = "https://accounts.google.com/o/oauth2/auth"
           + "?response_type=code"
           + "&client_id=" + encodeURIComponent(this.data.clientId)
           + "&scope=" +  "https://www.googleapis.com/auth/gmail.modify"
-          + "&redirect_uri=" + "urn:ietf:wg:oauth:2.0:oob",
-        '_blank');
+          + "&redirect_uri=" + "urn:ietf:wg:oauth:2.0:oob";
+      var key = document.getElementById('key');
+      key.value = url;
+      key.select();
+      document.execCommand("Copy");
+      key.value = '';
     },
 
     copyAuth: function() {
