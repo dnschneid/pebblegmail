@@ -1,78 +1,67 @@
 {
-    "appKeys": {},
-    "capabilities": [
-        "configurable"
-    ],
-    "companyName": "David Schneider",
-    "longName": "Email for Pebble",
-    "projectType": "pebblejs",
-    "resources": {
-        "media": [
-            {
-                "file": "images/menu_icon.png",
-                "name": "IMAGE_MENU_ICON",
-                "type": "bitmap"
-            },
-            {
-                "file": "images/logo_splash.png",
-                "name": "IMAGE_LOGO_SPLASH",
-                "type": "bitmap"
-            },
-            {
-                "file": "images/tile_splash.png",
-                "name": "IMAGE_TILE_SPLASH",
-                "type": "bitmap"
-            },
-            {
-                "file": "fonts/UbuntuMono-Regular.ttf",
-                "name": "MONO_FONT_14",
-                "type": "font"
-            },
-            {
-                "file": "images/warning.png",
-                "name": "IMAGES_WARNING_PNG",
-                "type": "bitmap"
-            },
-            {
-                "file": "images/uncheck.png",
-                "name": "IMAGES_UNCHECK_PNG",
-                "type": "bitmap"
-            },
-            {
-                "file": "images/tile_splash.png",
-                "name": "IMAGES_TILE_SPLASH_PNG",
-                "type": "bitmap"
-            },
-            {
-                "file": "images/refresh.png",
-                "name": "IMAGES_REFRESH_PNG",
-                "type": "bitmap"
-            },
-            {
-                "file": "images/envelope.png",
-                "menuIcon": true,
-                "name": "IMAGES_ENVELOPE_PNG",
-                "type": "bitmap"
-            },
-            {
-                "file": "images/check.png",
-                "name": "IMAGES_CHECK_PNG",
-                "type": "bitmap"
-            }
-        ]
-    },
-    "sdkVersion": "3",
-    "shortName": "Email",
-    "targetPlatforms": [
-        "aplite",
-        "basalt",
-        "chalk"
-    ],
-    "uuid": "1b3e723b-0475-41fd-bab4-fa5b15da2a4f",
-    "versionCode": 1,
-    "versionLabel": "1.1",
-    "watchapp": {
-        "hiddenApp": false,
-        "watchface": false
-    }
+  "appKeys": {},
+  "capabilities": [
+    "configurable"
+  ],
+  "companyName": "David Schneider",
+  "longName": "Email for Pebble",
+  "resources": {
+    "media": [
+      {
+        "file": "fonts/UbuntuMono-Regular.ttf",
+        "name": "MONO_FONT_14",
+        "type": "font"
+      },
+      {
+        "file": "images/tile_splash.png",
+        "name": "IMAGE_TILE_SPLASH",
+        "type": "png"
+      },
+      {
+        "file": "images/warning.png",
+        "name": "IMAGES_WARNING_PNG",
+        "type": "png"
+      },
+      {
+        "file": "images/uncheck.png",
+        "name": "IMAGES_UNCHECK_PNG",
+        "type": "png"
+      },
+      {
+        "file": "images/tile_splash.png",
+        "name": "IMAGES_TILE_SPLASH_PNG",
+        "type": "png"
+      },
+      {
+        "file": "images/refresh.png",
+        "name": "IMAGES_REFRESH_PNG",
+        "type": "png"
+      },
+      {
+        "file": "images/envelope.png",
+        "menuIcon": true,
+        "name": "IMAGES_ENVELOPE_PNG",
+        "type": "png"
+      },
+      {
+        "file": "images/check.png",
+        "name": "IMAGES_CHECK_PNG",
+        "type": "png"
+      }
+    ]
+  },
+  "sdkVersion": "3",
+  "shortName": "Email",
+  "targetPlatforms": [
+    "aplite",
+    "basalt",
+    "chalk"
+  ],
+  "uuid": "1b3e723b-0475-41fd-bab4-fa5b15da2a4f",
+  "versionCode": 1,
+  "versionLabel": "1.1",
+  "watchapp": {
+    "hiddenApp": false,
+    "watchface": false
+  }
 }
