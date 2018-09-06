@@ -61,8 +61,7 @@
           <label class='item'>
             <div class='item-input-wrapper item-input-wrapper-button'
                  style='position: relative; left: 23%'>
-              <input type='text' class='item-input' id='key'
-                     placeholder='Auth key (1/xyz)'>
+              <input type='text' class='item-input' id='key'>
             </div>
             <input type='button' class='item-button item-input-button'
                    style='left: 10px' id='signIn' value='GET KEY'>
@@ -226,6 +225,7 @@
       key.select();
       document.execCommand("Copy");
       key.value = '';
+      key.placeholder = 'URL copied to clipboard';
     },
 
     copyAuth: function() {
@@ -256,6 +256,7 @@
 
         var key = document.getElementById('key');
         key.value = account.key || '';
+        key.placeholder = 'Auth key (1/xyz)';
         if (/\d\/\S{22,}/.test(account.key)) {
           document.getElementById('signIn').style.display = 'none';
           document.getElementById('copy').style.display = '';
